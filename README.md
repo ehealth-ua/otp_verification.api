@@ -6,24 +6,24 @@
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add `otp_verification` to your list of dependencies in `mix.exs`:
+  1. Add `otp_verification_api` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:otp_verification, "~> 0.1.0"}]
+      [{:otp_verification_api, "~> 0.1.0"}]
     end
     ```
 
-  2. Ensure `otp_verification` is started before your application:
+  2. Ensure `otp_verification_api` is started before your application:
 
     ```elixir
     def application do
-      [applications: [:otp_verification]]
+      [applications: [:otp_verification_api]]
     end
     ```
 
 If [published on HexDocs](https://hex.pm/docs/tasks#hex_docs), the docs can
-be found at [https://hexdocs.pm/otp_verification](https://hexdocs.pm/otp_verification)
+be found at [https://hexdocs.pm/otp_verification_api](https://hexdocs.pm/otp_verification_api)
 
 
 # Phoenix App

@@ -4,7 +4,7 @@
       name: "default",
       files: %{
         included: ["lib/"],
-        excluded: ["lib/otp_verification/tasks.ex"]
+        excluded: ["lib/otp_verification_api/tasks.ex"]
       },
       checks: [
         {Credo.Check.Design.TagTODO, exit_status: 0},

@@ -1,7 +1,7 @@
 {
   "skip_files": [
     "test/*",
-    "/lib/otp_verification/tasks.ex"
+    "/lib/otp_verification_api/tasks.ex"
   ],
   "custom_stop_words": [
     "field",

@@ -4,7 +4,7 @@ defmodule OtpVerification.Repo do
 
   More info: https://hexdocs.pm/ecto/Ecto.Repo.html
   """
-  use Ecto.Repo, otp_app: :otp_verification
+  use Ecto.Repo, otp_app: :otp_verification_api
 
   @doc """
   Dynamically loads the repository configuration from the environment variables.

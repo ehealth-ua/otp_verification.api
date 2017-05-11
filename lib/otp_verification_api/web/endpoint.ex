@@ -1,11 +1,11 @@
 defmodule OtpVerification.Web.Endpoint do
   @moduledoc """
-  Phoenix Endpoint for otp_verification application.
+  Phoenix Endpoint for otp_verification_api application.
   """
-  use Phoenix.Endpoint, otp_app: :otp_verification
+  use Phoenix.Endpoint, otp_app: :otp_verification_api
 
   # Allow acceptance tests to run in concurrent mode
-  if Application.get_env(:otp_verification, :sql_sandbox) do
+  if Application.get_env(:otp_verification_api, :sql_sandbox) do
     plug Phoenix.Ecto.SQL.Sandbox
   end
 

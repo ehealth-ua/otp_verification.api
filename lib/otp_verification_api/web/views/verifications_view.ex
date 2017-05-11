@@ -1,4 +1,5 @@
 defmodule OtpVerification.Web.VerificationsView do
+  @moduledoc false
   use OtpVerification.Web, :view
   alias OtpVerification.Web.VerificationsView
 
@@ -11,11 +12,15 @@ defmodule OtpVerification.Web.VerificationsView do
   end
 
   def render("verifications.json", %{verifications: verifications}) do
-    %{id: verifications.id,
+    %{
+      id: verifications.id,
       type: verifications.type,
       phone_number: verifications.phone_number,
       check_digit: verifications.check_digit,
       status: verifications.status,
-      code: verifications.code}
+      code: verifications.code,
+      code_expired_at: verifications.code_expired_at,
+      active: verifications.active
+     }
   end
 end

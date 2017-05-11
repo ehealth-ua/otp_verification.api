@@ -1,10 +1,10 @@
-defmodule :otp_verification_tasks do
+defmodule :otp_verification_api_tasks do
   @moduledoc """
   Nice way to apply migrations inside a released application.
 
   Example:
 
-      otp_verification/bin/otp_verification command otp_verification_tasks migrate!
+      otp_verification_api/bin/otp_verification_api command otp_verification_api_tasks migrate!
   """
   import Mix.Ecto, warn: false
 
@@ -44,7 +44,7 @@ defmodule :otp_verification_tasks do
 
   defp load_app do
     start_applications([:logger, :postgrex, :ecto])
-    :ok = Application.load(:otp_verification)
+    :ok = Application.load(:otp_verification_api)
   end
 
   defp start_applications(apps) do

@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :otp_verification, key: :value
+#     config :otp_verification_api, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:otp_verification, :key)
+#     Application.get_env(:otp_verification_api, :key)
 #
 # Or configure a 3rd-party app:
 #
@@ -23,13 +23,15 @@ use Mix.Config
 # Or read environment variables in runtime (!) as:
 #
 #     :var_name, "${ENV_VAR_NAME}"
-config :otp_verification,
-  ecto_repos: [OtpVerification.Repo]
+config :otp_verification_api,
+  ecto_repos: [OtpVerification.Repo],
+  code_length: {:system, :integer, "OTP_CODE_LENGTH", 4},
+  code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15}
 
 # Configure your database
-config :otp_verification, OtpVerification.Repo,
+config :otp_verification_api, OtpVerification.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: {:system, "DB_NAME", "otp_verification_dev"},
+  database: {:system, "DB_NAME", "otp_verification_api_dev"},
   username: {:system, "DB_USER", "postgres"},
   password: {:system, "DB_PASSWORD", "postgres"},
   hostname: {:system, "DB_HOST", "localhost"},
@@ -39,7 +41,7 @@ config :otp_verification, OtpVerification.Repo,
 
 # General application configuration
 # Configures the endpoint
-config :otp_verification, OtpVerification.Web.Endpoint,
+config :otp_verification_api, OtpVerification.Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "7X/pAxXDa89ArqDGkBZCS4eTGKGDOdx1DDDWKS/AB42isRqbn0LoZXhIQ2n/XqTK",
   render_errors: [view: EView.Views.PhoenixError, accepts: ~w(json)]

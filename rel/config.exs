@@ -14,9 +14,9 @@ environment :default do
   set cookie: cookie
 end
 
-release :otp_verification do
-  set version: current_version(:otp_verification)
+release :otp_verification_api do
+  set version: current_version(:otp_verification_api)
   set applications: [
-    otp_verification: :permanent
+    otp_verification_api: :permanent
   ]
 end

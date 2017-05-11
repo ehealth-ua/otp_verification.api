@@ -4,7 +4,7 @@ defmodule OtpVerification.Mixfile do
   @version "0.1.0"
 
   def project do
-    [app: :otp_verification,
+    [app: :otp_verification_api,
      description: "Add description to your package.",
      package: package(),
      version: @version,
@@ -74,7 +74,7 @@ defmodule OtpVerification.Mixfile do
     [contributors: ["Nebo #15"],
      maintainers: ["Nebo #15"],
      licenses: ["LISENSE.md"],
-     links: %{github: "https://github.com/Nebo15/otp_verification"},
+     links: %{github: "https://github.com/Nebo15/otp_verification_api"},
      files: ~w(lib LICENSE.md mix.exs README.md)]
   end
 
@@ -87,6 +87,6 @@ defmodule OtpVerification.Mixfile do
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
      "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test":       ["ecto.reset", "ecto.create --quiet", "ecto.migrate", "test"]]
+     "test":       ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end

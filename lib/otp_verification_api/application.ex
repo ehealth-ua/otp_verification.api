@@ -1,9 +1,10 @@
 defmodule OtpVerification do
   @moduledoc """
-  This is an entry point of otp_verification application.
+  This is an entry point of otp_verification_api application.
   """
 
   use Application
+  alias OtpVerification.Web.Endpoint
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
@@ -29,7 +30,7 @@ defmodule OtpVerification do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    OtpVerification.Web.Endpoint.config_change(changed, removed)
+    Endpoint.config_change(changed, removed)
     :ok
   end
 

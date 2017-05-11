@@ -4,8 +4,10 @@ defmodule OtpVerification.VerificationTest do
   alias OtpVerification.Verification
   alias OtpVerification.Verification.Verifications
 
-  @create_attrs %{check_digit: 42, code: 42, phone_number: "some phone_number", status: "some status", type: "some type"}
-  @update_attrs %{check_digit: 43, code: 43, phone_number: "some updated phone_number", status: "some updated status", type: "some updated type"}
+  @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "created",
+    type: "otp", code_expired_at: "2017-05-10T10:00:09.932834Z"}
+  @update_attrs %{check_digit: 43, code: 43, phone_number: "+380631112244", status: "completed",
+    type: "otp", code_expired_at: "2017-05-11T10:00:09.932834Z"}
   @invalid_attrs %{check_digit: nil, code: nil, phone_number: nil, status: nil, type: nil}
 
   def fixture(:verifications, attrs \\ @create_attrs) do
@@ -27,9 +29,9 @@ defmodule OtpVerification.VerificationTest do
     assert {:ok, %Verifications{} = verifications} = Verification.create_verifications(@create_attrs)
     assert verifications.check_digit == 42
     assert verifications.code == 42
-    assert verifications.phone_number == "some phone_number"
-    assert verifications.status == "some status"
-    assert verifications.type == "some type"
+    assert verifications.phone_number == "+380631112233"
+    assert verifications.status == "created"
+    assert verifications.type == "otp"
   end
 
   test "create_verifications/1 with invalid data returns error changeset" do
@@ -42,9 +44,9 @@ defmodule OtpVerification.VerificationTest do
     assert %Verifications{} = verifications
     assert verifications.check_digit == 43
     assert verifications.code == 43
-    assert verifications.phone_number == "some updated phone_number"
-    assert verifications.status == "some updated status"
-    assert verifications.type == "some updated type"
+    assert verifications.phone_number == "+380631112244"
+    assert verifications.status == "completed"
+    assert verifications.type == "otp"
   end
 
   test "update_verifications/2 with invalid data returns error changeset" do
@@ -56,5 +58,21 @@ defmodule OtpVerification.VerificationTest do
   test "change_verifications/1 returns a verifications changeset" do
     verifications = fixture(:verifications)
     assert %Ecto.Changeset{} = Verification.change_verifications(verifications)
+  end
+
+  test "initialize verification" do
+    assert {:ok, %Verifications{}} =
+      Verification.initialize_verifications(%{"type" => "otp", "phone_number" => "+380637654433"})
+  end
+
+  test "complete verification" do
+    {:ok, %Verifications{} = verification} =
+      Verification.initialize_verifications(%{"type" => "otp", "phone_number" => "+380637654433"})
+
+    {:ok, %Verifications{}, :verified} = Verification.verify(verification, verification.code)
+
+    {:ok, %Verifications{} = verification} =
+      Verification.initialize_verifications(%{"type" => "otp", "phone_number" => "+380637654432"})
+    {:ok, %Verifications{}, :not_verified} = Verification.verify(verification, 123)
   end
 end
