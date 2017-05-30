@@ -1,0 +1,35 @@
+## Name of the node
+-name <%= release_name %>@${POD_IP}
+
+## Cookie for distributed erlang
+-setcookie ${ERLANG_COOKIE}
+
+## Enable kernel poll (good when many file descriptors is in use)
++K true
+
+# Set few async threads in pool on VM start (good for IO operations)
++A 15
+
+# Double the default maximum ports value
++Q 131072
+
+# Bind shedulers to CPU's (good when there are no other processes in OS that bind to processors)
++stbt db
+
+# Disable schedulers compaction of load (don't disable schedulers that is out of work)
++scl false
+
+# Enable port parallelism (good for parallelism, bad for latency)
++spp true
+
+# Doubles the distribution buffer busy limit (good for latency, increases memory consumption)
++zdbbl 2048
+
+# Tweak GC to run more often
+#-env ERL_FULLSWEEP_AFTER 10
+
+# Enable SMP automatically based on availability
+-smp auto
+
+# Set min and max ports for EPMD
+-kernel inet_dist_listen_min ${LISTEN_DIST_MIN} inet_dist_listen_max ${LISTEN_DIST_MAX}

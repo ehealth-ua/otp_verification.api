@@ -24,6 +24,7 @@ use Mix.Config
 #
 #     :var_name, "${ENV_VAR_NAME}"
 config :otp_verification_api,
+  namespace: OtpVerification,
   ecto_repos: [OtpVerification.Repo],
   code_length: {:system, :integer, "OTP_CODE_LENGTH", 4},
   code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15}
@@ -38,6 +39,12 @@ config :otp_verification_api, OtpVerification.Repo,
   port: {:system, :integer, "DB_PORT", 5432}
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
+
+# Configure JSON Logger back-end
+  config :logger_json, :backend,
+    on_init: {MPI, :load_from_system_env, []},
+    json_encoder: Poison,
+    metadata: :all
 
 # General application configuration
 # Configures the endpoint
