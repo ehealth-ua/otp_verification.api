@@ -42,7 +42,7 @@ config :otp_verification_api, OtpVerification.Repo,
 
 # Configure JSON Logger back-end
   config :logger_json, :backend,
-    on_init: {MPI, :load_from_system_env, []},
+    on_init: {OtpVerification, :load_from_system_env, []},
     json_encoder: Poison,
     metadata: :all
 
