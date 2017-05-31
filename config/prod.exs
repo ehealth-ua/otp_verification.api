@@ -50,6 +50,11 @@ config :otp_verification_api, OtpVerification.Web.Endpoint,
   debug_errors: false,
   code_reloader: false
 
+config :logger,
+  backends: [LoggerJSON],
+  level: :info,
+  # handle_sasl_reports: true,
+  handle_otp_reports: true
 # Do not log passwords, card data and tokens
 config :phoenix, :filter_parameters, ["password", "secret", "token", "password_confirmation", "card", "pan", "cvv"]
 
