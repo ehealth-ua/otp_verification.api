@@ -17,7 +17,14 @@ defmodule OtpVerification.Mixfile do
      deps: deps(),
      test_coverage: [tool: ExCoveralls],
      preferred_cli_env: [coveralls: :test],
-     docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]]]
+     docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]],
+     dialyzer: [
+       plt_add_deps: [:project, :plug, :phoenix_pubsub],
+       paths: [
+         "_build/dev/lib/otp_verification_api/ebin"
+       ]
+     ]
+    ]
   end
 
   # Configuration for the OTP application
@@ -27,13 +34,13 @@ defmodule OtpVerification.Mixfile do
     [extra_applications: [:logger, :logger_json, :confex, :runtime_tools, :logger_json, :poison,
                           :ecto, :postgrex, :cowboy,
                           :httpoison, :phoenix,
-                          :multiverse, :eview,
+                          :multiverse, :eview, :unicode_util_compat,
                           :phoenix_ecto],
      mod: {OtpVerification, []}]
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "test"]
   defp elixirc_paths(_),     do: ["lib"]
 
   # Dependencies can be Hex packages:
@@ -62,11 +69,13 @@ defmodule OtpVerification.Mixfile do
      {:multiverse, "~> 0.4.3"},
      {:eview, "~> 0.10.1"},
      {:phoenix_ecto, "~> 3.2"},
+     {:unicode_util_compat, "~> 0.2.0"},
      {:benchfella, ">= 0.3.4", only: [:dev, :test]},
      {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
-     {:excoveralls, ">= 0.5.0", only: [:dev, :test]},
+     {:excoveralls, "~> 0.7", only: [:dev, :test]},
      {:dogma, ">= 0.1.12", only: [:dev, :test]},
-     {:credo, ">= 0.5.1", only: [:dev, :test]}]
+     {:credo, ">= 0.5.1", only: [:dev, :test]},
+     {:dialyxir, "~> 0.5", only: [:dev], runtime: false}]
   end
 
   # Settings for publishing in Hex package manager:

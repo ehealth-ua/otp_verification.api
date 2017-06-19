@@ -1,18 +1,18 @@
 defmodule OtpVerification.Web.VerificationsControllerTest do
   use OtpVerification.Web.ConnCase
 
-  alias OtpVerification.Verification
+  alias OtpVerification.Verification.Verifications
 
   @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "created",
     type: "otp", code_expired_at: "2017-05-10T10:00:09.932834Z"}
 
-  def fixture(:verifications) do
-    {:ok, verifications} = Verification.create_verifications(@create_attrs)
-    verifications
+  def fixture(:verification) do
+    {:ok, verification} = Verifications.create_verification(@create_attrs)
+    verification
   end
 
   def initialize_verification do
-    {:ok, verification} = Verification.initialize_verifications(%{"phone_number" => "+380631112233", "type" => "otp"})
+    {:ok, verification} = Verifications.initialize_verification(%{"phone_number" => "+380631112233", "type" => "otp"})
     verification
   end
 
@@ -44,20 +44,20 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
   test "complete verification", %{conn: conn} do
     verification = initialize_verification()
 
-    conn = patch conn, "/verifications/#{verification.id}/actions/complete", %{code: verification.code}
+    conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code}
     assert %{"status" => "completed"} = json_response(conn, 200)["data"]
   end
 
   test "failed verification", %{conn: conn} do
     verification = initialize_verification()
 
-    conn = patch conn, "/verifications/#{verification.id}/actions/complete", %{code: 12345}
+    conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345}
     assert json_response(conn, 422)
   end
 
   test "search", %{conn: conn} do
-    fixture(:verifications)
-    fixture(:verifications)
+    fixture(:verification)
+    fixture(:verification)
 
     conn = get conn, "/verifications"
     assert json_response(conn, 200)["data"]

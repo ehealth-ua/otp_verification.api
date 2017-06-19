@@ -3,7 +3,7 @@ defmodule OtpVerification.Web.FallbackController do
   This controller should be used as `action_fallback` in rest of controllers to remove duplicated error handling.
   """
   use OtpVerification.Web, :controller
-  alias OtpVerification.Verification.Verifications.Search
+  alias OtpVerification.Verification.Search
 
   def call(conn, {_, _, :not_verified}) do
     conn

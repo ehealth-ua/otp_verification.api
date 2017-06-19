@@ -1,4 +1,4 @@
-defmodule OtpVerification.Verification.Verifications.Search do
+defmodule OtpVerification.Verification.Search do
   @moduledoc false
   use Ecto.Schema
 

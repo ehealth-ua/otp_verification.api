@@ -27,6 +27,6 @@ defmodule OtpVerification.Web.Router do
     get "/verifications", VerificationsController, :search
     get "/verifications/:id", VerificationsController, :show
     post "/verifications", VerificationsController, :initialize
-    patch "/verifications/:id/actions/complete", VerificationsController, :compele
+    patch "/verifications/:phone_number/actions/complete", VerificationsController, :compele
   end
 end
