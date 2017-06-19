@@ -10,6 +10,10 @@ ENV MIX_ENV=prod \
 
 WORKDIR ${HOME}
 
+RUN apk add --update --no-cache --virtual .build-deps \
+  make \
+  g++
+
 # Install and compile project dependencies
 COPY mix.* ./
 RUN mix do deps.get, deps.compile
@@ -19,6 +23,9 @@ COPY . .
 
 # Compile project for Erlang VM
 RUN mix do compile, release --verbose
+
+# Reduce container size
+RUN apk del  --no-cache .build-deps
 
 # Move release to /opt/$APP_NAME
 RUN \

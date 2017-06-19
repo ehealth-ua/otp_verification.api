@@ -2,7 +2,8 @@ defmodule OtpVerification.Repo.Migrations.CreateOtpVerification.Verification.Ver
   use Ecto.Migration
 
   def change do
-    create table(:verifications) do
+    create table(:verifications, primary_key: false) do
+      add :id, :uuid, primary_key: true
       add :type, :string, null: false
       add :phone_number, :string, null: false
       add :check_digit, :integer, null: false
@@ -10,7 +11,7 @@ defmodule OtpVerification.Repo.Migrations.CreateOtpVerification.Verification.Ver
       add :code, :integer, null: false
       add :code_expired_at, :utc_datetime, null: false
       add :active, :boolean, default: true
+      timestamps(updated_at: false, type: :utc_datetime)
     end
-
   end
 end
