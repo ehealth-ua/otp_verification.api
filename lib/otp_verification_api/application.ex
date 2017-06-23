@@ -20,7 +20,8 @@ defmodule OtpVerification do
       # Start the endpoint when the application starts
       supervisor(OtpVerification.Web.Endpoint, []),
       # Starts a worker by calling: OtpVerification.Worker.start_link(arg1, arg2, arg3)
-      # worker(OtpVerification.Worker, [arg1, arg2, arg3]),
+      worker(OtpVerification.Worker, [:cancel_verifications,
+        [minutes: Confex.get(:otp_verification_api, :code_expiration_period)]]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

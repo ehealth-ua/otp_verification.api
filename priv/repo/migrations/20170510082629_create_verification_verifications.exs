@@ -4,7 +4,6 @@ defmodule OtpVerification.Repo.Migrations.CreateOtpVerification.Verification.Ver
   def change do
     create table(:verifications, primary_key: false) do
       add :id, :uuid, primary_key: true
-      add :type, :string, null: false
       add :phone_number, :string, null: false
       add :check_digit, :integer, null: false
       add :status, :string, null: false

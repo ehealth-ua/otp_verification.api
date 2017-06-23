@@ -10,6 +10,8 @@ ENV MIX_ENV=prod \
 
 WORKDIR ${HOME}
 
+RUN sed --in-place '/\@edge/d' /etc/apk/repositories
+
 RUN apk add --update --no-cache --virtual .build-deps \
   make \
   g++
@@ -25,7 +27,7 @@ COPY . .
 RUN mix do compile, release --verbose
 
 # Reduce container size
-RUN apk del  --no-cache .build-deps
+RUN apk del --no-cache .build-deps
 
 # Move release to /opt/$APP_NAME
 RUN \

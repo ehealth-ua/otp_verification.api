@@ -34,7 +34,7 @@ defmodule OtpVerification.Mixfile do
     [extra_applications: [:logger, :logger_json, :confex, :runtime_tools, :logger_json, :poison,
                           :ecto, :postgrex, :cowboy,
                           :httpoison, :phoenix,
-                          :multiverse, :eview, :unicode_util_compat,
+                          :multiverse, :eview, :unicode_util_compat, :jvalid, :mouth,
                           :phoenix_ecto],
      mod: {OtpVerification, []}]
   end
@@ -67,7 +67,9 @@ defmodule OtpVerification.Mixfile do
      {:httpoison, "~> 0.11.1"},
      {:phoenix, "~> 1.3.0-rc"},
      {:multiverse, "~> 0.4.3"},
-     {:eview, "~> 0.10.1"},
+     {:eview, "~> 0.12.0"},
+     {:jvalid, "~> 0.6.0"},
+     {:mouth, "~> 0.2.0"},
      {:phoenix_ecto, "~> 3.2"},
      {:unicode_util_compat, "~> 0.2.0"},
      {:benchfella, ">= 0.3.4", only: [:dev, :test]},

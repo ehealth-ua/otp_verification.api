@@ -3,7 +3,6 @@ defmodule OtpVerification.Web.FallbackController do
   This controller should be used as `action_fallback` in rest of controllers to remove duplicated error handling.
   """
   use OtpVerification.Web, :controller
-  alias OtpVerification.Verification.Search
 
   def call(conn, {_, _, :not_verified}) do
     conn
@@ -29,15 +28,15 @@ defmodule OtpVerification.Web.FallbackController do
     |> render(EView.Views.ValidationError, :"422", changeset)
   end
 
-  def call(conn, %Ecto.Changeset{valid?: false, data: %Search{}} = changeset) do
-    conn
-    |> put_status(:unprocessable_entity)
-    |> render(EView.Views.ValidationError, :"422.query", changeset)
-  end
-
   def call(conn, %Ecto.Changeset{valid?: false} = changeset) do
     conn
     |> put_status(:unprocessable_entity)
     |> render(EView.Views.ValidationError, :"422", changeset)
+  end
+
+  def call(conn, {:error, json_schema_errors})  when is_list(json_schema_errors) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> render(EView.Views.ValidationError, :"422", %{schema: json_schema_errors})
   end
 end

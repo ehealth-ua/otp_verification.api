@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "phone": {
+            "type": "string",
+            "pattern": "^\\+380[0-9]{9}$"
+        }
+    },
+    "type": "object",
+    "properties": {
+        "phone_number": {
+            "$ref": "#/definitions/phone"
+        }
+    },
+    "required": [
+        "phone_number"
+    ],
+    "additionalProperties": false
+}
