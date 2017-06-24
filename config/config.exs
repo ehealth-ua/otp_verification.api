@@ -40,6 +40,14 @@ config :otp_verification_api, OtpVerification.Repo,
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 
+config :otp_verification_api, :mouth,
+  adapter: Mouth.IP2SMSAdapter,
+  source_number: {:system, "SOURCE_NUMBER", "test"},
+  gateway_url: {:system, "GATEWAY_URL", "localhost:4000"},
+  login: {:system, "GATEWAY_LOGIN", "test"},
+  password: {:system, "GATEWAY_PASSWORD", "password"}
+
+
 # Configure JSON Logger back-end
   config :logger_json, :backend,
     on_init: {OtpVerification, :load_from_system_env, []},

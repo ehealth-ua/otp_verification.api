@@ -2,14 +2,18 @@ defmodule OtpVerification.Verification.Verifications do
   @moduledoc """
   The boundary for the Verification system.
   """
+  use JValid
 
   import Ecto.{Query, Changeset}, warn: false
+  import Mouth.Message
   alias OtpVerification.Repo
-
+  alias OtpVerification.Messanger
   alias OtpVerification.Verification.Verification
-  alias OtpVerification.Verification.Search
   alias OtpVerification.Verification.VerifiedPhone
   alias EView.Changeset.Validators.PhoneNumber
+
+  use_schema :initialize_request, "specs/json_schemas/initialize_request_schema.json"
+  use_schema :complete_request,   "specs/json_schemas/complete_request_schema.json"
 
   @doc """
   Returns the list of verifications.
@@ -42,6 +46,10 @@ defmodule OtpVerification.Verification.Verifications do
   @spec get_verification(id :: String.t) :: Verification.t | nil | no_return
   def get_verification(id), do: Repo.get(Verification, id)
   def get_verification!(id), do: Repo.get!(Verification, id)
+
+  def get_verified_phone(phone_number) do
+    Repo.get_by(VerifiedPhone, %{phone_number: phone_number})
+  end
 
   @doc """
   Gets a single verification.
@@ -82,42 +90,51 @@ defmodule OtpVerification.Verification.Verifications do
     |> Repo.insert()
   end
 
-  @spec search(changeset :: %Ecto.Changeset{}) ::   [Verification.t] | []
-  def search(%Ecto.Changeset{} = changeset) do
-    Verification
-    |> maybe_filter_phone(changeset)
-    |> maybe_filter_statuses(changeset)
-    |> Repo.all()
-  end
-
   @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def initialize_verification(attrs) do
+    with :ok <- validate_schema(:initialize_request, attrs),
+         attrs <- initialize_attrs(attrs) do
+
+      deactivate_verifications(attrs["phone_number"])
+      send_sms(attrs["phone_number"], attrs["code"])
+
+      %Verification{}
+      |> verification_changeset(attrs)
+      |> Repo.insert()
+    end
+  end
+
+  defp send_sms(phone_number, code) do
+    new_message()
+    |> to(phone_number)
+    |> body(code)
+    |> Messanger.deliver
+  end
+
+  @spec initialize_verification(%{}) :: %{}
+  defp initialize_attrs(attrs) do
     {otp_code, checksum} = generate_otp_code()
     code_expired_at = get_code_expiration_time()
 
-    attrs =
-      Map.merge(attrs,
-        %{"check_digit" => checksum, "code" => otp_code, "status" => "created", "code_expired_at" => code_expired_at})
-
-    deactivate_verifications(attrs["phone_number"])
-
-    %Verification{}
-    |> verification_changeset(attrs)
-    |> Repo.insert()
+    Map.merge(attrs,
+      %{"check_digit" => checksum, "code" => otp_code, "status" => "new", "code_expired_at" => code_expired_at})
   end
 
   @spec verify(verification :: %{code: Integer.t}, code :: Integer.t) :: tuple()
   def verify(%Verification{code: verification_code} = verification, code) do
-    case Timex.before?(Timex.now, verification.code_expired_at) and verification_code == code do
-      true -> verification_completed(verification)
-      false -> verification_does_not_completed(verification)
+    with :ok <- validate_schema(:complete_request, %{"code" => code}),
+         is_verified <- Timex.before?(Timex.now, verification.code_expired_at) and verification_code == code do
+      case is_verified do
+        true -> verification_completed(verification)
+        false -> verification_does_not_completed(verification)
+      end
     end
   end
 
   @spec verification_completed(verification :: Verification.t) :: tuple()
   defp verification_completed(%Verification{} = verification) do
     verification
-    |> update_verification(%{status: "completed", active: false})
+    |> update_verification(%{status: "verified", active: false})
     |> Tuple.append(:verified)
   end
 
@@ -181,48 +198,23 @@ defmodule OtpVerification.Verification.Verifications do
   @spec verification_changeset(verification :: Verification.t, %{}) :: Ecto.Changeset.t
   defp verification_changeset(%Verification{} = verification, attrs) do
     verification
-    |> cast(attrs, [:type, :phone_number, :check_digit, :status, :code, :code_expired_at])
-    |> validate_required([:type, :phone_number, :check_digit, :status, :code, :code_expired_at])
-    |> validate_inclusion(:type, ["otp"])
-    |> validate_inclusion(:status, ["created", "completed", "unverified"])
+    |> cast(attrs, [:phone_number, :check_digit, :status, :code, :code_expired_at])
+    |> validate_required([:phone_number, :check_digit, :status, :code, :code_expired_at])
+    |> validate_inclusion(:status, ["new", "verified", "unverified", "completed"])
     |> PhoneNumber.validate_phone_number(:phone_number)
-  end
-
-  @spec search_changeset(%{phone_number: Stringt.t, statuses: String.t}) :: Ecto.Changeset.t
-  def search_changeset(attrs) do
-    %Search{}
-    |> cast(attrs, [:phone_number, :statuses])
-    |> PhoneNumber.validate_phone_number(:phone_number)
-    |> verify_each_status()
   end
 
   @spec verification_changeset(verification :: Verification.t, %{}) :: Ecto.Changeset.t
-  defp verified_phone_changeset(%VerifiedPhone{} = verified_phones, attrs) do
-    verified_phones
+  defp verified_phone_changeset(%VerifiedPhone{} = verified_phone, attrs) do
+    verified_phone
     |> cast(attrs, [:phone_number])
     |> validate_required([:phone_number])
     |> PhoneNumber.validate_phone_number(:phone_number)
   end
 
-  @spec verify_each_status(changeset :: %Ecto.Changeset{}) :: Ecto.Changeset.t
-  defp verify_each_status(changeset) do
-    case get_field(changeset, :statuses) do
-      nil -> changeset
-      statuses ->
-        Enum.reduce(String.split(statuses, ","), changeset, fn(status, acc) -> validate_status(acc, status) end)
-    end
-  end
-
-  @spec validate_status(changeset :: %Ecto.Changeset{}, value :: String.t) :: Ecto.Changeset.t
-  defp validate_status(changeset, value) do
-    if value in ["created", "completed", "unverified"],
-      do: changeset,
-      else: add_error(changeset, :statuses, "is invalid")
-  end
-
   @spec get_number(number_length :: pos_integer()) :: pos_integer()
   defp get_number(number_length) do
-    1..number_length
+    1..number_length - 1
     |> Enum.map(fn _ -> :rand.uniform(9) end)
     |> Enum.join
     |> String.to_integer
@@ -238,22 +230,6 @@ defmodule OtpVerification.Verification.Verifications do
     {otp_code, checksum}
   end
 
-  @spec maybe_filter_phone(query :: Ecto.Query.t, changeset :: %Ecto.Changeset{}) :: Ecto.Query.t
-  defp maybe_filter_phone(query, changeset) do
-    case get_change(changeset, :phone_number) do
-      nil -> query
-      phone -> where(query, [v], v.phone_number == ^phone)
-    end
-  end
-
-  @spec maybe_filter_statuses(query :: Ecto.Query.t, changeset :: %Ecto.Changeset{}) :: Ecto.Query.t
-  defp maybe_filter_statuses(query, changeset) do
-    case get_change(changeset, :statuses) do
-      nil -> query
-      statuses -> where(query, [v], v.status in ^String.split(statuses, ","))
-    end
-  end
-
   @spec get_code_expiration_time :: String.t
   defp get_code_expiration_time, do:
     DateTime.to_iso8601(Timex.shift(Timex.now, minutes: Confex.get(:otp_verification_api, :code_expiration_period)))
@@ -263,6 +239,14 @@ defmodule OtpVerification.Verification.Verifications do
     Verification
     |> where(phone_number: ^phone_number)
     |> where(active: true)
-    |> Repo.update_all(set: [active: false])
+    |> Repo.update_all(set: [active: false, status: "canceled"])
+  end
+
+  @spec cancel_expired_verifications() :: {integer, nil | [term]} | no_return
+  def cancel_expired_verifications do
+    Verification
+    |> where(active: true)
+    |> where([v], v.code_expired_at < ^get_code_expiration_time())
+    |> Repo.update_all(set: [active: false, status: "expired"])
   end
 end

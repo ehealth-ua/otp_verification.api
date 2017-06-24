@@ -24,8 +24,7 @@ defmodule OtpVerification.Web.Router do
   scope "/", OtpVerification.Web do
     pipe_through :api
 
-    get "/verifications", VerificationsController, :search
-    get "/verifications/:id", VerificationsController, :show
+    get "/verifications/:phone_number", VerificationsController, :show
     post "/verifications", VerificationsController, :initialize
     patch "/verifications/:phone_number/actions/complete", VerificationsController, :compele
   end

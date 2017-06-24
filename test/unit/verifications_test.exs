@@ -5,11 +5,11 @@ defmodule OtpVerification.VerificationsTest do
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
 
-  @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "created",
-    type: "otp", code_expired_at: "2017-05-10T10:00:09.932834Z"}
+  @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "new",
+    code_expired_at: "2017-05-10T10:00:09.932834Z"}
   @update_attrs %{check_digit: 43, code: 43, phone_number: "+380631112244", status: "completed",
-    type: "otp", code_expired_at: "2017-05-11T10:00:09.932834Z"}
-  @invalid_attrs %{check_digit: nil, code: nil, phone_number: nil, status: nil, type: nil}
+    code_expired_at: "2017-05-11T10:00:09.932834Z"}
+  @invalid_attrs %{check_digit: nil, code: nil, phone_number: nil, status: nil}
 
   describe "Verifications CRUD" do
     setup do
@@ -40,8 +40,7 @@ defmodule OtpVerification.VerificationsTest do
       assert verification.check_digit == 42
       assert verification.code == 42
       assert verification.phone_number == "+380631112233"
-      assert verification.status == "created"
-      assert verification.type == "otp"
+      assert verification.status == "new"
     end
 
     test "create_verifications fails to create without attributes" do
@@ -59,7 +58,6 @@ defmodule OtpVerification.VerificationsTest do
       assert verification.code == 43
       assert verification.phone_number == "+380631112244"
       assert verification.status == "completed"
-      assert verification.type == "otp"
     end
 
     test "update_verifications/2 with invalid data returns error changeset", %{verification: verification} do
@@ -73,15 +71,14 @@ defmodule OtpVerification.VerificationsTest do
 
     test "initialize verification" do
       assert {:ok, %Verification{}} =
-        Verifications.initialize_verification(%{"type" => "otp", "phone_number" => "+380637654433"})
+        Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
     end
 
     test "initializing verification with same phone number deactivates all records with same phone number",
       %{verification: verification} do
 
       assert verification.active
-      {:ok, new_verification} = Verifications.initialize_verification(%{"phone_number"=> "+380631112233",
-                                                                        "type" => "otp"})
+      {:ok, new_verification} = Verifications.initialize_verification(%{"phone_number"=> "+380631112233"})
       assert new_verification.active
       verification = Verifications.get_verification(verification.id)
       refute verification.active
@@ -89,18 +86,13 @@ defmodule OtpVerification.VerificationsTest do
 
     test "complete verification" do
       {:ok, %Verification{} = verification} =
-        Verifications.initialize_verification(%{"type" => "otp", "phone_number" => "+380637654433"})
+        Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
 
       {:ok, %Verification{}, :verified} = Verifications.verify(verification, verification.code)
 
       {:ok, %Verification{} = verification} =
-        Verifications.initialize_verification(%{"type" => "otp", "phone_number" => "+380637654432"})
+        Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
       {:ok, %Verification{}, :not_verified} = Verifications.verify(verification, 123)
-    end
-
-    test "search verification", %{verification: verification} do
-      ch_set = Verifications.search_changeset(%{phone_number: verification.phone_number, status: verification.status})
-      assert verification in Verifications.search(ch_set)
     end
 
     test "delete_verification", %{verification: verification} do
@@ -111,6 +103,13 @@ defmodule OtpVerification.VerificationsTest do
 
       {:ok, _} = Verifications.delete_verification(verification)
       assert new_verification in Verifications.list_verifications()
+    end
+
+    test "cancel expired verifications", %{verification: verification} do
+      Verifications.cancel_expired_verifications()
+      verification = Repo.get(Verification, verification.id)
+      refute verification.active
+      assert verification.status == "expired"
     end
   end
 
@@ -126,9 +125,6 @@ defmodule OtpVerification.VerificationsTest do
       assert id == phone.id
       assert phone_number == phone.phone_number
     end
-  end
-
-  describe "Verifications context helpers" do
   end
 
 end

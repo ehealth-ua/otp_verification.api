@@ -9,7 +9,6 @@ defmodule OtpVerification.Verification.Verification do
     field :code, :integer
     field :phone_number, :string
     field :status, :string
-    field :type, :string
     field :code_expired_at, :utc_datetime
     field :active, :boolean, default: true
     timestamps(type: :utc_datetime, updated_at: false)
