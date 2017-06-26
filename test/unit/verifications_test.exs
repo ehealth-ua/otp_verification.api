@@ -41,6 +41,8 @@ defmodule OtpVerification.VerificationsTest do
       assert verification.code == 42
       assert verification.phone_number == "+380631112233"
       assert verification.status == "new"
+      assert verification.gateway_id == nil
+      assert verification.gateway_status == nil
     end
 
     test "create_verifications fails to create without attributes" do
@@ -70,8 +72,11 @@ defmodule OtpVerification.VerificationsTest do
     end
 
     test "initialize verification" do
-      assert {:ok, %Verification{}} =
+      assert {:ok, %Verification{} = verification} =
         Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
+      assert verification.gateway_id == "test"
+      assert verification.gateway_status == "Accepted"
+      assert verification.attempts_count == 0
     end
 
     test "initializing verification with same phone number deactivates all records with same phone number",
@@ -88,7 +93,8 @@ defmodule OtpVerification.VerificationsTest do
       {:ok, %Verification{} = verification} =
         Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
 
-      {:ok, %Verification{}, :verified} = Verifications.verify(verification, verification.code)
+      {:ok, verified_verification, :verified} = Verifications.verify(verification, verification.code)
+      refute verified_verification.active
 
       {:ok, %Verification{} = verification} =
         Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
@@ -103,6 +109,11 @@ defmodule OtpVerification.VerificationsTest do
 
       {:ok, _} = Verifications.delete_verification(verification)
       assert new_verification in Verifications.list_verifications()
+    end
+
+    test "check_gateway_status", %{verification: verification} do
+      {:ok, verification} = Verifications.check_gateway_status(verification)
+      assert verification.gateway_status == "Accepted"
     end
 
     test "cancel expired verifications", %{verification: verification} do

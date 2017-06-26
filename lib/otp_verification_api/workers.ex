@@ -1,22 +1,30 @@
 defmodule OtpVerification.Worker do
-  @moduledoc """
-  OtpVerification background jobs module
-  """
+  @moduledoc false
+  require Logger
+  use GenServer
   alias OtpVerification.Verification.Verifications
 
   def start_link(worker_function, opts) do
-    env = System.get_env("MIX_ENV")
-    if env in ["test", "ci"] do
-      :ignore
-    else
-      Task.start(__MODULE__, worker_function, [opts])
-    end
+    GenServer.start_link(__MODULE__, [call: worker_function, opts: opts])
   end
 
-  def cancel_verifications(args) do
-    miliseconds_to_sleep = (Keyword.get(args, :minutes) + 1) * 60 * 1000
-    Process.sleep(miliseconds_to_sleep)
-    Verifications.cancel_expired_verifications()
-    cancel_verifications(args)
+  def init([call: worker_function, opts: opts]) do
+    schedule_work(worker_function, opts) # Schedule work to be performed at some point
+    {:ok, %{opts: opts}}
+  end
+
+  def handle_info(:cancel_verifications, %{opts: opts} = state) do
+    Task.start(fn ->
+      {canceled_records_count, _} = Verifications.cancel_expired_verifications()
+      Logger.info fn -> "Just cleaned #{canceled_records_count} expired verifications" end
+    end)
+
+    schedule_work(:cancel_verifications, opts) # Reschedule once more
+    {:noreply, state}
+  end
+
+  defp schedule_work(worker_function, opts) do
+    miliseconds_to_sleep = Keyword.get(opts, :minutes) * 60 * 1000
+    Process.send_after(self(), worker_function, miliseconds_to_sleep)
   end
 end
