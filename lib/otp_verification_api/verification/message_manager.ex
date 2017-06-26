@@ -18,6 +18,6 @@ defmodule OtpVerification.Verification.MessageManager do
     Task.start(fn ->
       Verifications.check_gateway_status(state.verification)
     end)
-    {:stop, :normal}
+    {:stop, :normal, %{}}
   end
 end
