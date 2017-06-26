@@ -105,9 +105,11 @@ defmodule OtpVerification.Verification.Verifications do
   end
 
   defp send_sms(phone_number, code) do
+    sms_text = Confex.get(:otp_verification_api, :code_text)
+    sms_text = sms_text <> to_string(code)
     new_message()
     |> to(phone_number)
-    |> body(code)
+    |> body(sms_text)
     |> Messanger.deliver
   end
 
