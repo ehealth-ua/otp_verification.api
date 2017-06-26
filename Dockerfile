@@ -10,9 +10,8 @@ ENV MIX_ENV=prod \
 
 WORKDIR ${HOME}
 
-RUN sed --in-place '/\@edge/d' /etc/apk/repositories
-
 RUN apk add --update --no-cache --virtual .build-deps \
+  musl=1.1.16-r10 \
   make \
   g++
 

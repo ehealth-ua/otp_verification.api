@@ -33,7 +33,7 @@ defmodule OtpVerification.Mixfile do
   def application do
     [extra_applications: [:logger, :logger_json, :confex, :runtime_tools, :logger_json, :poison,
                           :ecto, :postgrex, :cowboy,
-                          :httpoison, :phoenix,
+                          :httpoison, :phoenix, :xmerl,
                           :multiverse, :eview, :unicode_util_compat, :jvalid, :mouth,
                           :phoenix_ecto],
      mod: {OtpVerification, []}]

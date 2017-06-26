@@ -26,6 +26,7 @@ use Mix.Config
 config :otp_verification_api,
   namespace: OtpVerification,
   ecto_repos: [OtpVerification.Repo],
+  code_text: {:system, :string, "OTP_CODE_LENGTH", "Autorization code: "},
   code_length: {:system, :integer, "OTP_CODE_LENGTH", 4},
   code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15}
 
