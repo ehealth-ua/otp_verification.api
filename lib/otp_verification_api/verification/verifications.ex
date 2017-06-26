@@ -267,7 +267,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec check_gateway_status(verification :: Verification.t) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def check_gateway_status(verification) do
-    {:ok, [status: gateway_status, id: _]} = Messenger.status(verification.gateway_id)
+    {_, [status: gateway_status, id: _]} = Messenger.status(verification.gateway_id)
     update_verification(verification, %{gateway_status: gateway_status})
   end
 end
