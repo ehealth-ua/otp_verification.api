@@ -10,6 +10,9 @@ defmodule OtpVerification.Repo.Migrations.CreateOtpVerification.Verification.Ver
       add :code, :integer, null: false
       add :code_expired_at, :utc_datetime, null: false
       add :active, :boolean, default: true
+      add :gateway_id, :string
+      add :gateway_status, :string
+      add :attempts_count, :integer, default: 0
       timestamps(updated_at: false, type: :utc_datetime)
     end
   end

@@ -3,21 +3,22 @@ defmodule OtpVerification.Web.VerificationsView do
   use OtpVerification.Web, :view
   alias OtpVerification.Web.VerificationsView
 
-  def render("show.json", %{verifications: verifications}) do
-    render_one(verifications, VerificationsView, "verifications.json")
+  def render("show.json", %{verification: verification}) do
+    render_one(verification, VerificationsView, "verification.json",  as: :verification)
   end
 
-  def render("verifications.json", %{verifications: verifications}) do
+  def render("verification.json", %{verification: verification}) do
     %{
-      id: verifications.id,
-      phone_number: verifications.phone_number,
-      check_digit: verifications.check_digit,
-      status: verifications.status,
-      code: verifications.code,
-      code_expired_at: verifications.code_expired_at,
-      active: verifications.active
+      id: verification.id,
+      phone_number: verification.phone_number,
+      check_digit: verification.check_digit,
+      status: verification.status,
+      code: verification.code,
+      code_expired_at: verification.code_expired_at,
+      active: verification.active
      }
   end
+
   def render("phone.json", %{verified_phone: phone_number}) do
     %{
       phone_number: phone_number

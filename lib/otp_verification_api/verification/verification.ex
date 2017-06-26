@@ -11,6 +11,9 @@ defmodule OtpVerification.Verification.Verification do
     field :status, :string
     field :code_expired_at, :utc_datetime
     field :active, :boolean, default: true
+    field :gateway_id, :string
+    field :gateway_status, :string
+    field :attempts_count, :integer, default: 0
     timestamps(type: :utc_datetime, updated_at: false)
   end
 end
