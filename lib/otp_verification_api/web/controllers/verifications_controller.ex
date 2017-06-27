@@ -1,12 +1,16 @@
 defmodule OtpVerification.Web.VerificationsController do
   @moduledoc false
   use OtpVerification.Web, :controller
+  use JValid
 
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
   alias OtpVerification.Verification.MessageManager
   action_fallback OtpVerification.Web.FallbackController
+
+  use_schema :initialize_request, "specs/json_schemas/initialize_request_schema.json"
+  use_schema :complete_request,   "specs/json_schemas/complete_request_schema.json"
 
   def show(conn, %{"phone_number" => phone_number}) do
     with %VerifiedPhone{phone_number: phone_number} <- Verifications.get_verified_phone(phone_number) do
@@ -15,7 +19,8 @@ defmodule OtpVerification.Web.VerificationsController do
   end
 
   def initialize(conn, params) do
-    with {:ok, %Verification{} = verification} <- Verifications.initialize_verification(params) do
+    with :ok <- validate_schema(:initialize_request, params),
+      {:ok, %Verification{} = verification} <- Verifications.initialize_verification(params) do
       MessageManager.check_status(verification)
       conn
       |> put_status(:created)
@@ -23,10 +28,13 @@ defmodule OtpVerification.Web.VerificationsController do
     end
   end
 
-  def compele(conn, %{"phone_number" => phone_number, "code" => code}) do
-    with %Verification{active: true} = verification <- Verifications.get_verification_by(phone_number: phone_number),
+  def compele(conn, %{"phone_number" => phone_number} = params) do
+    params = Map.delete(params, "phone_number")
+    with :ok <- validate_schema(:complete_request, params),
+      %Verification{active: true} = verification <- Verifications.get_verification_by(phone_number: phone_number),
+      code <- Map.fetch!(params, "code"),
       {:ok, %Verification{} = verification, :verified} <- Verifications.verify(verification, code),
-       {:ok, %VerifiedPhone{}} <- Verifications.add_verified_phone(verification) do
+      {:ok, %VerifiedPhone{}} <- Verifications.add_verified_phone(verification) do
         conn
         |> put_status(:ok)
         |> put_resp_header("location", verifications_path(conn, :show, verification))

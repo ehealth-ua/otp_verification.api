@@ -84,6 +84,25 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
       assert json_response(conn, 403)
     end
+
+    test "get proper verification response when creates many verifications for same number", %{conn: conn} do
+      post conn, "/verifications", %{phone_number: "+380631112233"}
+      post conn, "/verifications", %{phone_number: "+380631112233"}
+      post conn, "/verifications", %{phone_number: "+380631112233"}
+      res = post conn, "/verifications", %{phone_number: "+380631112233"}
+      %{"code" => code} = json_response(res, 201)["data"]
+
+      res2 = patch conn, "/verifications/+380631112233/actions/complete", %{code: code}
+      assert json_response(res2, 200)
+    end
+
+    test "json schema works", %{conn: conn} do
+      initialize_verification()
+      res = patch conn, "/verifications/+380631112233/actions/complete", %{code: "1234"}
+      assert json_response(res, 422)
+      res = patch conn, "/verifications/+380631112233/actions/complete", %{codse: 1234}
+      assert json_response(res, 422)
+    end
   end
 
   describe "GET /verifications" do
