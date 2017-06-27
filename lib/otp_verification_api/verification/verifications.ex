@@ -2,7 +2,6 @@ defmodule OtpVerification.Verification.Verifications do
   @moduledoc """
   The boundary for the Verification system.
   """
-  use JValid
 
   import Ecto.{Query, Changeset}, warn: false
   import Mouth.Message
@@ -11,9 +10,6 @@ defmodule OtpVerification.Verification.Verifications do
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
   alias EView.Changeset.Validators.PhoneNumber
-
-  use_schema :initialize_request, "specs/json_schemas/initialize_request_schema.json"
-  use_schema :complete_request,   "specs/json_schemas/complete_request_schema.json"
 
   @doc """
   Returns the list of verifications.
@@ -62,7 +58,12 @@ defmodule OtpVerification.Verification.Verifications do
       %OtpVerification.Verification.Verification
   """
   @spec get_verification_by(params :: Keyword.t) :: Verification.t | []
-  def get_verification_by(params), do: Repo.get_by(Verification, params)
+  def get_verification_by(params) do
+    Verification
+    |> order_by(desc: :inserted_at)
+    |> limit(1)
+    |> Repo.get_by(params)
+  end
 
   @doc """
   Creates a verification.
@@ -92,8 +93,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def initialize_verification(attrs) do
-    with :ok <- validate_schema(:initialize_request, attrs),
-         attrs <- initialize_attrs(attrs) do
+    with attrs <- initialize_attrs(attrs) do
 
       deactivate_verifications(attrs["phone_number"])
 
@@ -128,8 +128,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec verify(verification :: %{code: Integer.t}, code :: Integer.t) :: tuple()
   def verify(%Verification{code: verification_code} = verification, code) do
-    with :ok <- validate_schema(:complete_request, %{"code" => code}),
-         is_verified <- Timex.before?(Timex.now, verification.code_expired_at) and verification_code == code do
+    with is_verified <- Timex.before?(Timex.now, verification.code_expired_at) and verification_code == code do
       case is_verified do
         true -> verification_completed(verification)
         false -> verification_does_not_completed(verification)
