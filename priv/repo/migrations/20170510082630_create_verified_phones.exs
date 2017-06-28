@@ -7,6 +7,6 @@ defmodule OtpVerification.Repo.Migrations.CreateOtpVerification.Verification.Ver
       add :phone_number, :string, null: false
       timestamps(type: :utc_datetime, inserted_at: false)
     end
-
+    create unique_index(:verified_phones, :phone_number)
   end
 end

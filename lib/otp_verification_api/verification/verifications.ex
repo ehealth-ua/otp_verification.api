@@ -86,9 +86,14 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec add_verified_phone(verification :: %Verification{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def add_verified_phone(%Verification{} = verification) do
-    %VerifiedPhone{}
-    |> verified_phone_changeset(%{phone_number: verification.phone_number})
-    |> Repo.insert()
+    verified_phone = VerifiedPhone |> first |> Repo.one
+    case verified_phone do
+      nil ->
+        %VerifiedPhone{}
+        |> verified_phone_changeset(%{phone_number: verification.phone_number})
+        |> Repo.insert()
+      verified_phone -> {:ok, verified_phone}
+    end
   end
 
   @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
@@ -223,6 +228,7 @@ defmodule OtpVerification.Verification.Verifications do
     verified_phone
     |> cast(attrs, [:phone_number])
     |> validate_required([:phone_number])
+    |> unique_constraint(:phone_number)
     |> PhoneNumber.validate_phone_number(:phone_number)
   end
 
