@@ -26,10 +26,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       conn = post conn, "/verifications", %{phone_number: "+380631112233"}
       assert %{
         "id" => _,
-        "check_digit" => _,
-        "code" => _,
         "code_expired_at" => _,
-        "phone_number" => "+380631112233",
         "status" => "new"
         } = json_response(conn, 201)["data"]
     end
@@ -90,7 +87,9 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       post conn, "/verifications", %{phone_number: "+380631112233"}
       post conn, "/verifications", %{phone_number: "+380631112233"}
       res = post conn, "/verifications", %{phone_number: "+380631112233"}
-      %{"code" => code} = json_response(res, 201)["data"]
+      %{"id" => id} = json_response(res, 201)["data"]
+
+      code = Verifications.get_verification(id).code
 
       res2 = patch conn, "/verifications/+380631112233/actions/complete", %{code: code}
       assert json_response(res2, 200)

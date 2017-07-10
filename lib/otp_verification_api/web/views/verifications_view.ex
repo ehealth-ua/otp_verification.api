@@ -10,10 +10,7 @@ defmodule OtpVerification.Web.VerificationsView do
   def render("verification.json", %{verification: verification}) do
     %{
       id: verification.id,
-      phone_number: verification.phone_number,
-      check_digit: verification.check_digit,
       status: verification.status,
-      code: verification.code,
       code_expired_at: verification.code_expired_at,
       active: verification.active
      }
