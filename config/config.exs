@@ -43,7 +43,7 @@ config :otp_verification_api, OtpVerification.Repo,
 # is restricted to this project.
 
 config :otp_verification_api, :mouth,
-  adapter: {:system, "GATEWAY_ADAPTER", Mouth.TestAdapter},
+  adapter: {:system, :module, "GATEWAY_ADAPTER", Mouth.TestAdapter},
   source_number: {:system, "SOURCE_NUMBER", "test"},
   gateway_url: {:system, "GATEWAY_URL", "localhost:4000"},
   login: {:system, "GATEWAY_LOGIN", "test"},
