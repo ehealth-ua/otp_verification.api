@@ -2,6 +2,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
   use OtpVerification.Web.ConnCase
 
   alias OtpVerification.Verification.Verifications
+  alias OtpVerification.Verification.VerifiedPhone
 
   @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "new",
     code_expired_at: "2017-05-10T10:00:09.932834Z"}
@@ -62,6 +63,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
       conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code}
       assert %{"status" => "verified"} = json_response(conn, 200)["data"]
+      assert length(Repo.all(VerifiedPhone)) == 1
     end
 
     test "failed verification", %{conn: conn} do
