@@ -12,8 +12,8 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     verification
   end
 
-  def initialize_verification do
-    {:ok, verification} = Verifications.initialize_verification(%{"phone_number" => "+380631112233"})
+  def initialize_verification(phone_number \\ "+380631112233") do
+    {:ok, verification} = Verifications.initialize_verification(%{"phone_number" => phone_number})
     verification
   end
 
@@ -114,11 +114,23 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       conn1 = get conn, "/verifications/+380631112233"
       assert json_response(conn1, 200)
 
+
       conn2 = get conn, "/verifications/13123123"
       assert json_response(conn2, 404)
 
       conn3 = get conn, ~s(/verifications/\" or \"\"\=\"\")
       assert json_response(conn3, 404)
+
+      new_verification = initialize_verification("+380931232323")
+      patch conn, "/verifications/#{new_verification.phone_number}/actions/complete", %{code: new_verification.code}
+
+      conn1 = get conn, "/verifications/+380931232323"
+      assert json_response(conn1, 200)
+
+      patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code}
+
+      conn1 = get conn, "/verifications/+380631112233"
+      assert json_response(conn1, 200)
     end
   end
 end

@@ -86,7 +86,11 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec add_verified_phone(verification :: %Verification{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def add_verified_phone(%Verification{} = verification) do
-    verified_phone = VerifiedPhone |> first |> Repo.one
+    verified_phone =
+      VerifiedPhone
+      |> where(phone_number: ^verification.phone_number)
+      |> first
+      |> Repo.one
     case verified_phone do
       nil ->
         %VerifiedPhone{}
