@@ -28,7 +28,7 @@ defmodule OtpVerification.Web.VerificationsController do
     end
   end
 
-  def compele(conn, %{"phone_number" => phone_number} = params) do
+  def complete(conn, %{"phone_number" => phone_number} = params) do
     params = Map.delete(params, "phone_number")
     with :ok <- validate_schema(:complete_request, params),
       %Verification{active: true} = verification <- Verifications.get_verification_by(phone_number: phone_number),

@@ -137,12 +137,20 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec verify(verification :: %{code: Integer.t}, code :: Integer.t) :: tuple()
   def verify(%Verification{code: verification_code} = verification, code) do
-    with is_verified <- Timex.before?(Timex.now, verification.code_expired_at) and verification_code == code do
+    with :ok <- verify_expiration_time(verification),
+         is_verified <- verification_code == code
+    do
       case is_verified do
         true -> verification_completed(verification)
-        false -> verification_does_not_completed(verification)
+        false -> verification_does_not_completed(verification, :not_verified)
       end
     end
+  end
+
+  defp verify_expiration_time(%Verification{} = verification) do
+    if Timex.before?(Timex.now, verification.code_expired_at),
+      do: :ok,
+      else: verification_does_not_completed(verification, :expired)
   end
 
   @spec verification_completed(verification :: Verification.t) :: tuple()
@@ -152,19 +160,16 @@ defmodule OtpVerification.Verification.Verifications do
     |> Tuple.append(:verified)
   end
 
-  @spec verification_does_not_completed(verification :: Verification.t) :: tuple()
-  defp verification_does_not_completed(%Verification{} = verification) do
+  @spec verification_does_not_completed(verification :: Verification.t, error :: atom) :: tuple()
+  defp verification_does_not_completed(%Verification{} = verification, error) do
     max_attempts = Confex.get(:otp_verification_api, :max_attempts)
     attempts_count = verification.attempts_count + 1
-    attrs = case attempts_count do
-      attempts_count when attempts_count < max_attempts ->
-        %{attempts_count: attempts_count}
-      attempts_count when attempts_count >= max_attempts ->
-        %{status: "unverified", active: false, attempts_count: attempts_count}
-    end
+    attrs = if attempts_count < max_attempts,
+      do: %{attempts_count: attempts_count},
+      else: %{status: "unverified", active: false, attempts_count: attempts_count}
     verification
     |> update_verification(attrs)
-    |> Tuple.append(:not_verified)
+    |> Tuple.append(error)
   end
 
   @doc """

@@ -58,6 +58,11 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
   end
   describe "PATCH /verifications" do
+    test "complete with invalid phone number", %{conn: conn} do
+      conn = patch conn, "/verifications/123456/actions/complete", %{code: 12345}
+      assert json_response(conn, 404)
+    end
+
     test "complete verification", %{conn: conn} do
       verification = initialize_verification()
 
@@ -70,7 +75,16 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       verification = initialize_verification()
 
       conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345}
-      assert json_response(conn, 422)
+      assert %{"error" => %{"message" => "Invalid verification code"}} = json_response(conn, 403)
+    end
+
+    test "code has been expired", %{conn: conn} do
+      default_expiration = Confex.get(:otp_verification_api, :code_expiration_period)
+      System.put_env("CODE_EXPIRATION_PERIOD_MINUTES", "0")
+      verification = initialize_verification()
+      conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code}
+      assert %{"error" => %{"message" => "Verification code expired"}} = json_response(conn, 403)
+      System.put_env("CODE_EXPIRATION_PERIOD_MINUTES", to_string(default_expiration))
     end
 
     test "can't verify  after 3 attempts", %{conn: conn} do
@@ -80,8 +94,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345}
       patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345}
       conn = patch conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code}
-
-      assert json_response(conn, 403)
+      assert %{"error" => %{"message" => "Maximum attempts exceed"}} = json_response(conn, 403)
     end
 
     test "get proper verification response when creates many verifications for same number", %{conn: conn} do
@@ -113,7 +126,6 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
       conn1 = get conn, "/verifications/+380631112233"
       assert json_response(conn1, 200)
-
 
       conn2 = get conn, "/verifications/13123123"
       assert json_response(conn2, 404)
