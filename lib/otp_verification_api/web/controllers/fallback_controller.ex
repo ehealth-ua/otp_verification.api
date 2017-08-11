@@ -7,8 +7,14 @@ defmodule OtpVerification.Web.FallbackController do
 
   def call(conn, {_, _, :not_verified}) do
     conn
-    |> put_status(:unprocessable_entity)
-    |> render(EView.Views.Error, :"404")
+    |> put_status(403)
+    |> render(EView.Views.Error, :"403", %{message: "Invalid verification code"})
+  end
+
+  def call(conn, {_, _, :expired}) do
+    conn
+    |> put_status(403)
+    |> render(EView.Views.Error, :"403", %{message: "Verification code expired"})
   end
 
   def call(conn, {:error, :not_found}) do
@@ -26,7 +32,7 @@ defmodule OtpVerification.Web.FallbackController do
   def call(conn, %Verification{active: false} = _verification) do
     conn
     |> put_status(403)
-    |> render(EView.Views.Error, :"403", %{message: "Exceeded Maximum Attempts"})
+    |> render(EView.Views.Error, :"403", %{message: "Maximum attempts exceed"})
   end
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
