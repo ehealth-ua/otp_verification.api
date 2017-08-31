@@ -37,18 +37,10 @@ before_install:
   - sudo ./bin/ci/init-db.sh
 script:
   # Increment version in mix.exs
-  - ./bin/ci/version-increment.sh
+  - ./bin/ci/version-increment.sh || travis_terminate 1
   # Install dependencies
-  - mix deps.get
-  # Run all tests except pending ones
-  - mix test --exclude pending --trace
-  # Submit code coverage report to Coveralls
-  # Add --pro if you using private repo.
-  - mix coveralls.travis --exclude pending
-  # Run static code analysis
-  - mix credo --strict
-  # Check code style
-  - mix dogma
+  - mix deps.get || travis_terminate 1
+  - ./bin/mix_tests.sh || travis_terminate 1
   # Build Docker container
   - ./bin/build.sh
   # Initialize DB for Docker container
