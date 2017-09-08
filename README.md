@@ -1,5 +1,5 @@
 # OtpVerification
-[![Build Status](https://travis-ci.org/Nebo15/otp_verification.api.svg?branch=master)](https://travis-ci.org/Nebo15/otp_verification.api) [![Coverage Status](https://coveralls.io/repos/github/Nebo15/otp_verification.api/badge.svg?branch=master)](https://coveralls.io/github/Nebo15/otp_verification.api?branch=master)
+[![Build Status](https://travis-ci.org/edenlabllc/otp_verification.api.svg?branch=master)](https://travis-ci.org/edenlabllc/otp_verification.api) [![Coverage Status](https://coveralls.io/repos/github/edenlabllc/otp_verification.api/badge.svg?branch=master)](https://coveralls.io/github/edenlabllc/otp_verification.api?branch=master)
 
 Otp Verification service
 
@@ -11,7 +11,7 @@ Otp Verification service
 
 ## Installation
 
-You can use official Docker container to deploy this service, it can be found on [nebo15/otp_verification_api](https://hub.docker.com/r/nebo15/otp_verification_api/) Docker Hub.
+You can use official Docker container to deploy this service, it can be found on [edenlabllc/otp_verification_api](https://hub.docker.com/r/edenlabllc/otp_verification_api/) Docker Hub.
 
 ### Dependencies
 
