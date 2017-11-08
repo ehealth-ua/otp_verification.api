@@ -36,10 +36,11 @@ defmodule OtpVerification.VerificationsTest do
     end
 
     test "create_verifications/1 with valid data creates a verifications" do
-      assert {:ok, %Verification{} = verification} = Verifications.create_verification(@create_attrs)
+      params = %{@create_attrs | phone_number: "+380631112234"}
+      assert {:ok, %Verification{} = verification} = Verifications.create_verification(params)
       assert verification.check_digit == 42
       assert verification.code == 42
-      assert verification.phone_number == "+380631112233"
+      assert verification.phone_number == "+380631112234"
       assert verification.status == "new"
       assert verification.gateway_id == nil
       assert verification.gateway_status == nil
@@ -102,7 +103,8 @@ defmodule OtpVerification.VerificationsTest do
     end
 
     test "delete_verification", %{verification: verification} do
-      {:ok, new_verification} = Verifications.create_verification(@create_attrs)
+      params = %{@create_attrs | phone_number: "+380631112234"}
+      {:ok, new_verification} = Verifications.create_verification(params)
       list = Verifications.list_verifications()
       assert verification in list
       assert new_verification in list
