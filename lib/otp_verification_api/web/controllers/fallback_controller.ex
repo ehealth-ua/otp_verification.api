@@ -23,6 +23,12 @@ defmodule OtpVerification.Web.FallbackController do
     |> render(EView.Views.Error, :"404")
   end
 
+  def call(conn, {:error, :service_unavailable}) do
+    conn
+    |> put_status(503)
+    |> render(EView.Views.Error, :"503")
+  end
+
   def call(conn, nil) do
     conn
     |> put_status(:not_found)
