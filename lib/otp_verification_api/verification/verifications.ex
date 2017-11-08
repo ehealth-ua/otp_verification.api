@@ -102,7 +102,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
   def initialize_verification(attrs) do
-    with attrs <- initialize_attrs(attrs) do
+    with %{} = attrs <- initialize_attrs(attrs) do
 
       deactivate_verifications(attrs["phone_number"])
 
@@ -126,13 +126,16 @@ defmodule OtpVerification.Verification.Verifications do
     {otp_code, checksum} = generate_otp_code()
     code_expired_at = get_code_expiration_time()
 
-    {:ok, [status: gateway_status, id: gateway_id]} = send_sms(attrs["phone_number"], otp_code)
-    Map.merge(attrs,
-      %{
+    try do
+      {:ok, [status: gateway_status, id: gateway_id]} = send_sms(attrs["phone_number"], otp_code)
+      Map.merge(attrs, %{
         "check_digit" => checksum, "code" => otp_code,
         "status" => "new", "code_expired_at" => code_expired_at,
         "gateway_status" => gateway_status, "gateway_id" => gateway_id
-        })
+      })
+    rescue
+      Mouth.ApiError -> {:error, :service_unavailable}
+    end
   end
 
   @spec verify(verification :: %{code: Integer.t}, code :: Integer.t) :: tuple()
