@@ -6,7 +6,7 @@ defmodule OtpVerification.Web.VerificationsController do
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
-  alias OtpVerification.Verification.MessageManager
+
   action_fallback OtpVerification.Web.FallbackController
 
   use_schema :initialize_request, "specs/json_schemas/initialize_request_schema.json"
@@ -21,7 +21,6 @@ defmodule OtpVerification.Web.VerificationsController do
   def initialize(conn, params) do
     with :ok <- validate_schema(:initialize_request, params),
       {:ok, %Verification{} = verification} <- Verifications.initialize_verification(params) do
-      MessageManager.check_status(verification)
       conn
       |> put_status(:created)
       |> render("show.json", verification: verification)

@@ -4,9 +4,8 @@ defmodule OtpVerification.Verification.Verifications do
   """
 
   import Ecto.{Query, Changeset}, warn: false
-  import Mouth.Message
   alias OtpVerification.Repo
-  alias OtpVerification.Messenger
+  alias OtpVerification.SMSLogs
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
   alias EView.Changeset.Validators.PhoneNumber
@@ -112,26 +111,18 @@ defmodule OtpVerification.Verification.Verifications do
     end
   end
 
-  defp send_sms(phone_number, code) do
-    sms_text = Confex.get(:otp_verification_api, :code_text)
-    sms_text = sms_text <> to_string(code)
-    new_message()
-    |> to(phone_number)
-    |> body(sms_text)
-    |> Messenger.deliver
-  end
-
   @spec initialize_verification(%{}) :: %{}
   defp initialize_attrs(attrs) do
     {otp_code, checksum} = generate_otp_code()
     code_expired_at = get_code_expiration_time()
 
+    sms_text = :otp_verification_api |> Confex.get(:code_text) |> Kernel.<>(to_string(otp_code))
+
     try do
-      {:ok, [status: gateway_status, id: gateway_id]} = send_sms(attrs["phone_number"], otp_code)
+      {:ok, _} = SMSLogs.save_and_send_sms(%{"phone_number" => attrs["phone_number"], "body" => sms_text})
       Map.merge(attrs, %{
         "check_digit" => checksum, "code" => otp_code,
-        "status" => "new", "code_expired_at" => code_expired_at,
-        "gateway_status" => gateway_status, "gateway_id" => gateway_id
+        "status" => "new", "code_expired_at" => code_expired_at
       })
     rescue
       Mouth.ApiError -> {:error, :service_unavailable}
@@ -229,7 +220,7 @@ defmodule OtpVerification.Verification.Verifications do
   defp verification_changeset(%Verification{} = verification, attrs) do
     verification
     |> cast(attrs, [:phone_number, :check_digit, :status, :code,
-                    :code_expired_at, :active, :gateway_id, :gateway_status, :attempts_count])
+                    :code_expired_at, :active, :attempts_count])
     |> validate_required([:phone_number, :check_digit, :status, :code, :code_expired_at])
     |> validate_inclusion(:status, ["new", "verified", "unverified", "completed"])
     |> PhoneNumber.validate_phone_number(:phone_number)
@@ -280,11 +271,5 @@ defmodule OtpVerification.Verification.Verifications do
     |> where(active: true)
     |> where([v], v.code_expired_at < ^Timex.now)
     |> Repo.update_all(set: [active: false, status: "expired"])
-  end
-
-  @spec check_gateway_status(verification :: Verification.t) :: {:ok, Verification.t} | {:error, Ecto.Changeset.t}
-  def check_gateway_status(verification) do
-    {_, [status: gateway_status, id: _]} = Messenger.status(verification.gateway_id)
-    update_verification(verification, %{gateway_status: gateway_status})
   end
 end

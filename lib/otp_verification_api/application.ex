@@ -20,6 +20,7 @@ defmodule OtpVerification do
       # Start the endpoint when the application starts
       supervisor(OtpVerification.Web.Endpoint, []),
       # Starts a worker by calling: OtpVerification.Worker.start_link(arg1, arg2, arg3)
+      worker(OtpVerification.Scheduler, []),
       worker(OtpVerification.Worker, [:cancel_verifications,
         [minutes: 1]]),
     ]

@@ -9,6 +9,7 @@ defmodule OtpVerification.SMSLog.Schema do
     field :body, :string, null: false
     field :gateway_id, :string
     field :gateway_status, :string
+    field :status_changed_at, :utc_datetime
     timestamps(type: :utc_datetime, updated_at: false)
   end
 end

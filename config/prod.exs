@@ -50,6 +50,16 @@ config :otp_verification_api, OtpVerification.Web.Endpoint,
   debug_errors: false,
   code_reloader: false
 
+config :otp_verification_api, OtpVerification.Scheduler,
+  overlap: false,
+  timezone: :utc,
+  jobs: [
+    sms_status_check: [
+      schedule: {:system, "SMS_STATUSES_SCHEDULE", "* * * * *"},
+      task: {OtpVerification.SMSLogs, :status_check_job, []},
+    ]
+  ]
+
 config :logger,
   backends: [LoggerJSON],
   level: :info,
