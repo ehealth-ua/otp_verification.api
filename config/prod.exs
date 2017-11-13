@@ -55,7 +55,7 @@ config :otp_verification_api, OtpVerification.Scheduler,
   timezone: :utc,
   jobs: [
     sms_status_check: [
-      schedule: {:system, "SMS_STATUSES_SCHEDULE", "* * * * *"},
+      schedule: "* * * * *",
       task: {OtpVerification.SMSLogs, :status_check_job, []},
     ]
   ]
