@@ -10,7 +10,7 @@ defmodule OtpVerification.SMSLogs do
 
   def save_and_send_sms(%{"phone_number" => phone_number, "body" => body} = params) do
     type = Map.get(params, "type", "undefined")
-    with {:ok, [status: gateway_status, id: gateway_id]} <- send_sms(phone_number, body),
+    with {:ok, [status: gateway_status, id: gateway_id] = _} <- send_sms(phone_number, body),
          %Ecto.Changeset{} = changeset <- create_changeset(%SMSLog{}, %{phone_number: phone_number,
                                                                        body: body,
                                                                        gateway_id: gateway_id,
