@@ -119,7 +119,8 @@ defmodule OtpVerification.Verification.Verifications do
     sms_text = :otp_verification_api |> Confex.get(:code_text) |> Kernel.<>(to_string(otp_code))
 
     try do
-      {:ok, _} = SMSLogs.save_and_send_sms(%{"phone_number" => attrs["phone_number"], "body" => sms_text})
+      {:ok, _} = SMSLogs.save_and_send_sms(%{"phone_number" => attrs["phone_number"],
+                                             "body" => sms_text, "type" => "verification"})
       Map.merge(attrs, %{
         "check_digit" => checksum, "code" => otp_code,
         "status" => "new", "code_expired_at" => code_expired_at

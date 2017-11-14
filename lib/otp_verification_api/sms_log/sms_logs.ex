@@ -8,12 +8,14 @@ defmodule OtpVerification.SMSLogs do
   alias OtpVerification.Messenger
   alias OtpVerification.SMSLog.Schema, as: SMSLog
 
-  def save_and_send_sms(%{"phone_number" => phone_number, "body" => body}) do
+  def save_and_send_sms(%{"phone_number" => phone_number, "body" => body} = params) do
+    type = Map.get(params, "type", "undefined")
     with {:ok, [status: gateway_status, id: gateway_id]} <- send_sms(phone_number, body),
          %Ecto.Changeset{} = changeset <- create_changeset(%SMSLog{}, %{phone_number: phone_number,
                                                                        body: body,
                                                                        gateway_id: gateway_id,
-                                                                       gateway_status: gateway_status})
+                                                                       gateway_status: gateway_status,
+                                                                       type: type})
     do
       Repo.insert(changeset)
     end
@@ -21,7 +23,7 @@ defmodule OtpVerification.SMSLogs do
 
   def create_changeset(%SMSLog{} = schema, attrs) do
     schema
-    |> cast(attrs, [:phone_number, :body, :gateway_id, :gateway_status])
+    |> cast(attrs, [:phone_number, :body, :gateway_id, :gateway_status, :type])
   end
 
   defp send_sms(phone_number, body) do
@@ -50,17 +52,17 @@ defmodule OtpVerification.SMSLogs do
 
   def update_sms_status(sms) do
     case Messenger.status(sms.gateway_id) do
-      {_, [status: status, id: _id]} ->
-        do_update_sms_status(sms, status)
+      {_, [status: status, id: _id, datetime: datetime]} ->
+        do_update_sms_status(sms, status, datetime)
       _ -> nil
     end
   end
 
-  defp do_update_sms_status(sms, status) do
+  defp do_update_sms_status(sms, status, datetime) do
     update_query = change(sms, [gateway_status: status])
     update_query =
       if status == "Delivered" do
-        put_change(update_query, :status_changed_at, Timex.now())
+        put_change(update_query, :status_changed_at, datetime)
       else
         update_query
       end

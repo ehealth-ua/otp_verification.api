@@ -11,7 +11,8 @@ defmodule OtpVerification.Web.SMSView do
     %{
       id: sms.id,
       phone_number: sms.phone_number,
-      body: sms.body
+      body: sms.body,
+      type: sms.type
      }
   end
 end
