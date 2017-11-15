@@ -62,7 +62,7 @@ defmodule OtpVerification.SMSLogs do
     update_query = change(sms, [gateway_status: status])
     update_query =
       if status == "Delivered" do
-        put_change(update_query, :status_changed_at, datetime)
+        put_change(update_query, :status_changed_at, Timex.parse!(datetime, "{RFC1123}"))
       else
         update_query
       end
