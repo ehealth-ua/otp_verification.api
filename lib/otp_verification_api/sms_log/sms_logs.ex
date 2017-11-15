@@ -1,5 +1,7 @@
 defmodule OtpVerification.SMSLogs do
   @moduledoc false
+  use Timex
+
   import Ecto.Changeset
   import Ecto.Query
   import Mouth.Message
@@ -62,7 +64,7 @@ defmodule OtpVerification.SMSLogs do
     update_query = change(sms, [gateway_status: status])
     update_query =
       if status == "Delivered" do
-        put_change(update_query, :status_changed_at, Timex.parse!(datetime, "{RFC1123}"))
+        put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
       else
         update_query
       end
