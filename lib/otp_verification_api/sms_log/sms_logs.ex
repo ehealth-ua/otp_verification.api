@@ -63,10 +63,12 @@ defmodule OtpVerification.SMSLogs do
   defp do_update_sms_status(sms, status, datetime) do
     update_query = change(sms, [gateway_status: status])
     update_query =
-      if status == "Delivered" do
-        put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
-      else
-        update_query
+      cond do
+        status == "Delivered" ->
+          put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
+        sms.inserted_at <= Timex.shift(Timex.now(), minutes: -30) ->
+          put_change(update_query, :gateway_status, "Unknown")
+        true -> update_query
       end
     Repo.update(update_query)
   end

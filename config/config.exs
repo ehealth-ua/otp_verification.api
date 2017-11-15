@@ -30,7 +30,7 @@ config :otp_verification_api,
   code_text: {:system, :string, "OTP_CODE_TEXT", "Код авторизації дій в системі eHealth: "},
   code_length: {:system, :integer, "OTP_CODE_LENGTH", 4},
   code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15},
-  sms_statuses_expiration: {:system, :integer, "SMS_STATUSES_EXPIRATION", 25}
+  sms_statuses_expiration: {:system, :integer, "SMS_STATUSES_EXPIRATION", 32}
 
 # Configure your database
 config :otp_verification_api, OtpVerification.Repo,
