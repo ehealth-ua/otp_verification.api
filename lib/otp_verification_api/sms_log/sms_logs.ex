@@ -43,7 +43,7 @@ defmodule OtpVerification.SMSLogs do
 
   defp find_sms_for_status_check(minutes) do
     SMSLog
-    |> where([sms], sms.inserted_at < ^Timex.shift(Timex.now, minutes: -minutes))
+    |> where([sms], sms.inserted_at > ^Timex.shift(Timex.now, minutes: -minutes))
     |> where([sms], sms.gateway_status in ^["Accepted", "Enroute"])
     |> Repo.all
   end
