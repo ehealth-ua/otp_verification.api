@@ -31,7 +31,7 @@ defmodule OtpVerification.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [extra_applications: [:logger, :logger_json, :confex, :runtime_tools, :logger_json, :poison,
+    [extra_applications: [:logger, :confex, :runtime_tools, :poison,
                           :ecto, :postgrex, :cowboy,
                           :httpoison, :phoenix, :xmerl,
                           :multiverse, :eview, :unicode_util_compat, :jvalid, :mouth,
@@ -59,7 +59,6 @@ defmodule OtpVerification.Mixfile do
   defp deps do
     [{:distillery, "~> 1.2"},
      {:confex, "~> 1.4"},
-     {:logger_json, "~> 0.4.0"},
      {:poison, "~> 3.1"},
      {:ecto, "~> 2.1"},
      {:postgrex, "~> 0.13.2"},
@@ -73,6 +72,8 @@ defmodule OtpVerification.Mixfile do
      {:phoenix_ecto, "~> 3.2"},
      {:unicode_util_compat, "~> 0.2.0"},
      {:quantum, ">= 2.1.0"},
+     {:plug_logger_json, "~> 0.5"},
+     {:ecto_logger_json, "~> 0.1"},
      {:benchfella, ">= 0.3.4", only: [:dev, :test]},
      {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
      {:excoveralls, "~> 0.7", only: [:dev, :test]},

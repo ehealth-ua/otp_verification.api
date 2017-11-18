@@ -39,7 +39,8 @@ config :otp_verification_api, OtpVerification.Repo,
   username: {:system, "DB_USER", "postgres"},
   password: {:system, "DB_PASSWORD", "postgres"},
   hostname: {:system, "DB_HOST", "localhost"},
-  port: {:system, :integer, "DB_PORT", 5432}
+  port: {:system, :integer, "DB_PORT", 5432},
+  loggers: [{Ecto.LoggerJSON, :log, [:info]}]
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 
@@ -51,13 +52,6 @@ config :otp_verification_api, :mouth,
   login: {:system, "GATEWAY_LOGIN", "test"},
   password: {:system, "GATEWAY_PASSWORD", "password"}
 
-
-# Configure JSON Logger back-end
-  config :logger_json, :backend,
-    on_init: {OtpVerification, :load_from_system_env, []},
-    json_encoder: Poison,
-    metadata: :all
-
 # General application configuration
 # Configures the endpoint
 config :otp_verification_api, OtpVerification.Web.Endpoint,
@@ -66,15 +60,7 @@ config :otp_verification_api, OtpVerification.Web.Endpoint,
   render_errors: [view: EView.Views.PhoenixError, accepts: ~w(json)]
 
 # Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
-# Configure JSON Logger back-end
-config :logger_json, :backend,
-  on_init: {OtpVerification, :load_from_system_env, []},
-  json_encoder: Poison,
-  metadata: :all
+config :logger, :console, format: "$message\n", level: :info
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
