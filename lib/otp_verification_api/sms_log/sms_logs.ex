@@ -2,6 +2,8 @@ defmodule OtpVerification.SMSLogs do
   @moduledoc false
   use Timex
 
+  require Logger
+
   import Ecto.Changeset
   import Ecto.Query
   import Mouth.Message
@@ -62,6 +64,13 @@ defmodule OtpVerification.SMSLogs do
 
   defp do_update_sms_status(sms, status, datetime) do
     update_query = change(sms, [gateway_status: status])
+    Logger.info(fn ->
+    """
+    #{inspect sms}
+    status: #{status}
+    Timex.shift(Timex.now(), minutes: -30): #{Timex.shift(Timex.now(), minutes: -30)}
+    """
+    end)
     update_query =
       cond do
         status == "Delivered" ->
