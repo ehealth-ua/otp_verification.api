@@ -8,7 +8,7 @@ defmodule OtpVerification.SMSLogTest do
     test "works fine" do
       SMSLogs.save_and_send_sms(%{"phone_number" => "+380930123456", "body" => "test"})
       Repo.update_all(OtpVerification.SMSLog.Schema, set:
-        [inserted_at: Timex.shift(Timex.now, minutes: -30),
+        [inserted_at: Timex.shift(Timex.now, minutes: -32),
          gateway_status: "Enroute"])
       SMSLogs.status_check_job()
       sms_logs = OtpVerification.Repo.all(OtpVerification.SMSLog.Schema)
