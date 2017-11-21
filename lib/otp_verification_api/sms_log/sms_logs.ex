@@ -44,7 +44,7 @@ defmodule OtpVerification.SMSLogs do
   defp find_sms_for_status_check(minutes) do
     SMSLog
     |> where([sms], sms.inserted_at > ^Timex.shift(Timex.now, minutes: -minutes))
-    |> where([sms], sms.gateway_status in ^["Accepted", "Enroute"])
+    |> where([sms], sms.gateway_status in ^["Accepted", "Enroute", "Unknown"])
     |> Repo.all
   end
 
@@ -67,7 +67,7 @@ defmodule OtpVerification.SMSLogs do
         status == "Delivered" ->
           put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
         sms.inserted_at <= Timex.shift(Timex.now(), minutes: -30) ->
-          put_change(update_query, :gateway_status, "Unknown")
+          put_change(update_query, :gateway_status, "Terminated")
         true -> update_query
       end
     Repo.update(update_query)
