@@ -33,7 +33,7 @@ defmodule OtpVerification.Mixfile do
   def application do
     [extra_applications: [:logger, :confex, :runtime_tools, :poison,
                           :ecto, :postgrex, :cowboy,
-                          :httpoison, :phoenix, :xmerl,
+                          :httpoison, :phoenix,
                           :multiverse, :eview, :unicode_util_compat, :jvalid, :mouth,
                           :phoenix_ecto],
      mod: {OtpVerification, []}]
@@ -57,7 +57,7 @@ defmodule OtpVerification.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:distillery, "~> 1.2"},
+    [{:distillery, "~> 1.4.0"},
      {:confex, "~> 1.4"},
      {:poison, "~> 3.1"},
      {:ecto, "~> 2.1"},
