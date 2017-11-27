@@ -9,6 +9,8 @@ WORKDIR /app
 
 ENV MIX_ENV=prod
 
+RUN apk add --no-cache erlang-xmerl
+
 RUN mix do \
       local.hex --force, \
       local.rebar --force, \
@@ -27,8 +29,6 @@ RUN apk add --no-cache \
       ca-certificates \
       openssl \
       bash
-
-RUN apk add --update erlang-xmerl
 
 WORKDIR /app
 
