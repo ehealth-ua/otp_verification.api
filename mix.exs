@@ -68,7 +68,7 @@ defmodule OtpVerification.Mixfile do
      {:multiverse, "~> 0.4.3"},
      {:eview, "~> 0.12.4"},
      {:jvalid, "~> 0.6.0"},
-     {:mouth, "~> 0.3.1"},
+     {:mouth, "~> 0.3.3"},
      {:phoenix_ecto, "~> 3.2"},
      {:unicode_util_compat, "~> 0.2.0"},
      {:quantum, ">= 2.1.0"},

@@ -28,6 +28,8 @@ RUN apk add --no-cache \
       openssl \
       bash
 
+RUN apk add --update erlang-xmerl
+
 WORKDIR /app
 
 COPY --from=builder /app/_build/prod/rel/${APP_NAME}/releases/${APP_VERSION}/${APP_NAME}.tar.gz /app
