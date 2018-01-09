@@ -5,7 +5,7 @@ Otp Verification service
 
 ## Specification
 
-- [API docs](http://docs.sam59.apiary.io/#)
+- [API docs](https://ehealthmisapi1.docs.apiary.io/#reference/public.-medical-service-provider-integration-layer/otp-verification)
 - [Entity-relation diagram](docs/erd.pdf)
 - [Implementation specification](http://docs.sam59.apiary.io)
 
