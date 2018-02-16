@@ -21,8 +21,7 @@ defmodule OtpVerification do
       supervisor(OtpVerification.Web.Endpoint, []),
       # Starts a worker by calling: OtpVerification.Worker.start_link(arg1, arg2, arg3)
       worker(OtpVerification.Scheduler, []),
-      worker(OtpVerification.Worker, [:cancel_verifications,
-        [minutes: 1]]),
+      worker(OtpVerification.Worker, [:cancel_verifications, [minutes: 1]])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -49,11 +48,14 @@ defmodule OtpVerification do
     case System.get_env("LOG_LEVEL") do
       nil ->
         :ok
+
       level when level in ["debug", "info", "warn", "error"] ->
         Logger.configure(level: String.to_atom(level))
+
       level ->
-        raise ArgumentError, "LOG_LEVEL environment should have one of 'debug', 'info', 'warn', 'error' values," <>
-                             "got: #{inspect level}"
+        raise ArgumentError,
+              "LOG_LEVEL environment should have one of 'debug', 'info', 'warn', 'error' values," <>
+                "got: #{inspect(level)}"
     end
   end
 end

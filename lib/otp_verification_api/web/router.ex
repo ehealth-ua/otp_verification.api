@@ -14,8 +14,8 @@ defmodule OtpVerification.Web.Router do
   require Logger
 
   pipeline :api do
-    plug :accepts, ["json"]
-    plug :put_secure_browser_headers
+    plug(:accepts, ["json"])
+    plug(:put_secure_browser_headers)
 
     # Uncomment to enable versioning of your API
     # plug Multiverse, gates: [
@@ -27,13 +27,13 @@ defmodule OtpVerification.Web.Router do
   end
 
   scope "/", OtpVerification.Web do
-    pipe_through :api
+    pipe_through(:api)
 
-    get "/verifications/:phone_number", VerificationsController, :show
-    post "/verifications", VerificationsController, :initialize
-    patch "/verifications/:phone_number/actions/complete", VerificationsController, :complete
+    get("/verifications/:phone_number", VerificationsController, :show)
+    post("/verifications", VerificationsController, :initialize)
+    patch("/verifications/:phone_number/actions/complete", VerificationsController, :complete)
 
-    post "/sms/send", SMSController, :send
+    post("/sms/send", SMSController, :send)
   end
 
   defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stacktrace}) do

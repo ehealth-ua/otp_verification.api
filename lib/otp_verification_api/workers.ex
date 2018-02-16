@@ -5,21 +5,23 @@ defmodule OtpVerification.Worker do
   alias OtpVerification.Verification.Verifications
 
   def start_link(worker_function, opts) do
-    GenServer.start_link(__MODULE__, [call: worker_function, opts: opts])
+    GenServer.start_link(__MODULE__, call: worker_function, opts: opts)
   end
 
-  def init([call: worker_function, opts: opts]) do
-    schedule_work(worker_function, opts) # Schedule work to be performed at some point
+  def init(call: worker_function, opts: opts) do
+    # Schedule work to be performed at some point
+    schedule_work(worker_function, opts)
     {:ok, %{opts: opts}}
   end
 
   def handle_info(:cancel_verifications, %{opts: opts} = state) do
     Task.start(fn ->
       {canceled_records_count, _} = Verifications.cancel_expired_verifications()
-      Logger.info fn -> "Just cleaned #{canceled_records_count} expired verifications" end
+      Logger.info(fn -> "Just cleaned #{canceled_records_count} expired verifications" end)
     end)
 
-    schedule_work(:cancel_verifications, opts) # Reschedule once more
+    # Reschedule once more
+    schedule_work(:cancel_verifications, opts)
     {:noreply, state}
   end
 

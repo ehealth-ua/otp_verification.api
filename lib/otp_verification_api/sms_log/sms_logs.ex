@@ -14,13 +14,16 @@ defmodule OtpVerification.SMSLogs do
 
   def save_and_send_sms(%{"phone_number" => phone_number, "body" => body} = params) do
     type = Map.get(params, "type", "undefined")
+
     with {_, [status: gateway_status, id: gateway_id, datetime: _]} <- send_sms(phone_number, body),
-         %Ecto.Changeset{} = changeset <- create_changeset(%SMSLog{}, %{phone_number: phone_number,
-                                                                       body: body,
-                                                                       gateway_id: gateway_id,
-                                                                       gateway_status: gateway_status,
-                                                                       type: type})
-    do
+         %Ecto.Changeset{} = changeset <-
+           create_changeset(%SMSLog{}, %{
+             phone_number: phone_number,
+             body: body,
+             gateway_id: gateway_id,
+             gateway_status: gateway_status,
+             type: type
+           }) do
       Repo.insert(changeset)
     end
   end
@@ -34,7 +37,7 @@ defmodule OtpVerification.SMSLogs do
     new_message()
     |> to(phone_number)
     |> body(body)
-    |> Messenger.deliver
+    |> Messenger.deliver()
   end
 
   def status_check_job do
@@ -45,9 +48,9 @@ defmodule OtpVerification.SMSLogs do
 
   defp find_sms_for_status_check(minutes) do
     SMSLog
-    |> where([sms], sms.inserted_at > ^Timex.shift(Timex.now, minutes: -minutes))
+    |> where([sms], sms.inserted_at > ^Timex.shift(Timex.now(), minutes: -minutes))
     |> where([sms], sms.gateway_status in ^["Accepted", "Enroute", "Unknown"])
-    |> Repo.all
+    |> Repo.all()
   end
 
   defp collect_status_updates(sms_collection) do
@@ -58,20 +61,27 @@ defmodule OtpVerification.SMSLogs do
     case Messenger.status(sms.gateway_id) do
       {_, [status: status, id: _id, datetime: datetime]} ->
         do_update_sms_status(sms, status, datetime)
-      _ -> nil
+
+      _ ->
+        nil
     end
   end
 
   defp do_update_sms_status(sms, status, datetime) do
-    update_query = change(sms, [gateway_status: status])
+    update_query = change(sms, gateway_status: status)
+
     update_query =
       cond do
         status == "Delivered" ->
           put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
+
         DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -30)) in [:lt, :eq] ->
           put_change(update_query, :gateway_status, "Terminated")
-        true -> update_query
+
+        true ->
+          update_query
       end
+
     Repo.update(update_query)
   end
 end

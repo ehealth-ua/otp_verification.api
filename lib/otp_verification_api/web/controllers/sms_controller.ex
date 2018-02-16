@@ -4,7 +4,7 @@ defmodule OtpVerification.Web.SMSController do
   alias OtpVerification.SMSLogs
   alias OtpVerification.SMSLog.Schema, as: SMSLog
 
-  action_fallback OtpVerification.Web.FallbackController
+  action_fallback(OtpVerification.Web.FallbackController)
 
   def send(conn, params) do
     with {:ok, %SMSLog{} = sms} <- SMSLogs.save_and_send_sms(params) do

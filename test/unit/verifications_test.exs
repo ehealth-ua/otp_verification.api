@@ -5,10 +5,20 @@ defmodule OtpVerification.VerificationsTest do
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
 
-  @create_attrs %{check_digit: 42, code: 42, phone_number: "+380631112233", status: "new",
-    code_expired_at: "2017-05-10T10:00:09.932834Z"}
-  @update_attrs %{check_digit: 43, code: 43, phone_number: "+380631112244", status: "completed",
-    code_expired_at: "2017-05-11T10:00:09.932834Z"}
+  @create_attrs %{
+    check_digit: 42,
+    code: 42,
+    phone_number: "+380631112233",
+    status: "new",
+    code_expired_at: "2017-05-10T10:00:09.932834Z"
+  }
+  @update_attrs %{
+    check_digit: 43,
+    code: 43,
+    phone_number: "+380631112244",
+    status: "completed",
+    code_expired_at: "2017-05-11T10:00:09.932834Z"
+  }
   @invalid_attrs %{check_digit: nil, code: nil, phone_number: nil, status: nil}
 
   describe "Verifications CRUD" do
@@ -72,15 +82,16 @@ defmodule OtpVerification.VerificationsTest do
 
     test "initialize verification" do
       assert {:ok, %Verification{} = verification} =
-        Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
+               Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
+
       assert verification.attempts_count == 0
     end
 
-    test "initializing verification with same phone number deactivates all records with same phone number",
-      %{verification: verification} do
-
+    test "initializing verification with same phone number deactivates all records with same phone number", %{
+      verification: verification
+    } do
       assert verification.active
-      {:ok, new_verification} = Verifications.initialize_verification(%{"phone_number"=> "+380631112233"})
+      {:ok, new_verification} = Verifications.initialize_verification(%{"phone_number" => "+380631112233"})
       assert new_verification.active
       verification = Verifications.get_verification(verification.id)
       refute verification.active
@@ -95,6 +106,7 @@ defmodule OtpVerification.VerificationsTest do
 
       {:ok, %Verification{} = verification} =
         Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
+
       {:ok, %Verification{}, :not_verified} = Verifications.verify(verification, 123)
     end
 
@@ -130,5 +142,4 @@ defmodule OtpVerification.VerificationsTest do
       assert phone_number == phone.phone_number
     end
   end
-
 end

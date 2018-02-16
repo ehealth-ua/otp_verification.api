@@ -4,26 +4,27 @@ defmodule OtpVerification.Mixfile do
   @version "1.45.2"
 
   def project do
-    [app: :otp_verification_api,
-     description: "Add description to your package.",
-     package: package(),
-     version: @version,
-     elixir: "~> 1.5",
-     elixirc_paths: elixirc_paths(Mix.env),
-     compilers: [:phoenix] ++ Mix.compilers,
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     aliases: aliases(),
-     deps: deps(),
-     test_coverage: [tool: ExCoveralls],
-     preferred_cli_env: [coveralls: :test],
-     docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]],
-     dialyzer: [
-       plt_add_deps: [:project, :plug, :phoenix_pubsub],
-       paths: [
-         "_build/dev/lib/otp_verification_api/ebin"
-       ]
-     ]
+    [
+      app: :otp_verification_api,
+      description: "Add description to your package.",
+      package: package(),
+      version: @version,
+      elixir: "~> 1.5",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix] ++ Mix.compilers(),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test],
+      docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]],
+      dialyzer: [
+        plt_add_deps: [:project, :plug, :phoenix_pubsub],
+        paths: [
+          "_build/dev/lib/otp_verification_api/ebin"
+        ]
+      ]
     ]
   end
 
@@ -31,17 +32,30 @@ defmodule OtpVerification.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [extra_applications: [:logger, :confex, :runtime_tools, :poison,
-                          :ecto, :postgrex, :cowboy,
-                          :httpoison, :phoenix,
-                          :eview, :unicode_util_compat, :jvalid, :mouth,
-                          :phoenix_ecto],
-     mod: {OtpVerification, []}]
+    [
+      extra_applications: [
+        :logger,
+        :confex,
+        :runtime_tools,
+        :poison,
+        :ecto,
+        :postgrex,
+        :cowboy,
+        :httpoison,
+        :phoenix,
+        :eview,
+        :unicode_util_compat,
+        :jvalid,
+        :mouth,
+        :phoenix_ecto
+      ],
+      mod: {OtpVerification, []}
+    ]
   end
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Dependencies can be Hex packages:
   #
@@ -57,37 +71,40 @@ defmodule OtpVerification.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:distillery, "~> 1.4.0"},
-     {:confex, "~> 1.4"},
-     {:poison, "~> 3.1"},
-     {:ecto, "~> 2.1"},
-     {:postgrex, "~> 0.13.2"},
-     {:cowboy, "~> 1.1"},
-     {:httpoison, "~> 0.11.1"},
-     {:phoenix, "~> 1.3.0-rc"},
-     {:eview, "~> 0.12.4"},
-     {:jvalid, "~> 0.6.0"},
-     {:mouth, "~> 0.3.3"},
-     {:phoenix_ecto, "~> 3.2"},
-     {:unicode_util_compat, "~> 0.2.0"},
-     {:quantum, ">= 2.1.0"},
-     {:plug_logger_json, "~> 0.5"},
-     {:ecto_logger_json, "~> 0.1"},
-     {:timex, "~> 3.1"},
-     {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
-     {:excoveralls, "~> 0.7", only: [:dev, :test]},
-     {:dogma, ">= 0.1.12", only: [:dev, :test]},
-     {:credo, ">= 0.5.1", only: [:dev, :test]},
-     {:dialyxir, "~> 0.5", only: [:dev], runtime: false}]
+    [
+      {:distillery, "~> 1.4.0"},
+      {:confex, "~> 1.4"},
+      {:poison, "~> 3.1"},
+      {:ecto, "~> 2.1"},
+      {:postgrex, "~> 0.13.2"},
+      {:cowboy, "~> 1.1"},
+      {:httpoison, "~> 0.11.1"},
+      {:phoenix, "~> 1.3.0-rc"},
+      {:eview, "~> 0.12.4"},
+      {:jvalid, "~> 0.6.0"},
+      {:mouth, "~> 0.3.3"},
+      {:phoenix_ecto, "~> 3.2"},
+      {:unicode_util_compat, "~> 0.2.0"},
+      {:quantum, ">= 2.1.0"},
+      {:plug_logger_json, "~> 0.5"},
+      {:ecto_logger_json, "~> 0.1"},
+      {:timex, "~> 3.1"},
+      {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
+      {:excoveralls, "~> 0.7", only: [:dev, :test]},
+      {:credo, ">= 0.5.1", only: [:dev, :test]},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+    ]
   end
 
   # Settings for publishing in Hex package manager:
   defp package do
-    [contributors: ["Nebo #15"],
-     maintainers: ["Nebo #15"],
-     licenses: ["LISENSE.md"],
-     links: %{github: "https://github.com/Nebo15/otp_verification_api"},
-     files: ~w(lib LICENSE.md mix.exs README.md)]
+    [
+      contributors: ["Nebo #15"],
+      maintainers: ["Nebo #15"],
+      licenses: ["LISENSE.md"],
+      links: %{github: "https://github.com/Nebo15/otp_verification_api"},
+      files: ~w(lib LICENSE.md mix.exs README.md)
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
@@ -97,8 +114,10 @@ defmodule OtpVerification.Mixfile do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-     "ecto.reset": ["ecto.drop", "ecto.setup"],
-     "test":       ["ecto.create --quiet", "ecto.migrate", "test"]]
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+    ]
   end
 end

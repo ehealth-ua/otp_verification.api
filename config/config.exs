@@ -41,6 +41,7 @@ config :otp_verification_api, OtpVerification.Repo,
   hostname: {:system, "DB_HOST", "localhost"},
   port: {:system, :integer, "DB_PORT", 5432},
   loggers: [{Ecto.LoggerJSON, :log, [:info]}]
+
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 
@@ -71,4 +72,4 @@ config :logger, :console,
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
 #
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
