@@ -4,7 +4,7 @@ defmodule OtpVerification.Web.SMSView do
   alias OtpVerification.Web.SMSView
 
   def render("show.json", %{sms: sms}) do
-    render_one(sms, SMSView, "sms.json",  as: :sms)
+    render_one(sms, SMSView, "sms.json", as: :sms)
   end
 
   def render("sms.json", %{sms: sms}) do
@@ -13,6 +13,6 @@ defmodule OtpVerification.Web.SMSView do
       phone_number: sms.phone_number,
       body: sms.body,
       type: sms.type
-     }
+    }
   end
 end

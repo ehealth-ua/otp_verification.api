@@ -28,9 +28,9 @@ config :otp_verification_api, OtpVerification.Repo,
 config :otp_verification_api, OtpVerification.Web.Endpoint,
   on_init: {OtpVerification.Web.Endpoint, :load_from_system_env, []},
   http: [port: {:system, "PORT", "80"}],
-  url:  [
+  url: [
     host: {:system, "HOST", "localhost"},
-    port: {:system, "PORT", "80"},
+    port: {:system, "PORT", "80"}
   ],
   secret_key_base: {:system, "SECRET_KEY"},
   debug_errors: false,
@@ -42,9 +42,10 @@ config :otp_verification_api, OtpVerification.Scheduler,
   jobs: [
     sms_status_check: [
       schedule: "* * * * *",
-      task: {OtpVerification.SMSLogs, :status_check_job, []},
+      task: {OtpVerification.SMSLogs, :status_check_job, []}
     ]
   ]
+
 # Do not log passwords, card data and tokens
 config :phoenix, :filter_parameters, ["password", "secret", "token", "password_confirmation", "card", "pan", "cvv"]
 

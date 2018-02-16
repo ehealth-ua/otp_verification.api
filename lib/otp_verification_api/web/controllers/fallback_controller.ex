@@ -53,7 +53,7 @@ defmodule OtpVerification.Web.FallbackController do
     |> render(EView.Views.ValidationError, :"422", changeset)
   end
 
-  def call(conn, {:error, json_schema_errors})  when is_list(json_schema_errors) do
+  def call(conn, {:error, json_schema_errors}) when is_list(json_schema_errors) do
     conn
     |> put_status(:unprocessable_entity)
     |> render(EView.Views.ValidationError, :"422", %{schema: json_schema_errors})
