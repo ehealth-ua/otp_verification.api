@@ -82,7 +82,7 @@ defmodule OtpVerification.Mixfile do
       {:phoenix, "~> 1.3.0-rc"},
       {:eview, "~> 0.12.4"},
       {:jvalid, "~> 0.6.0"},
-      {:mouth, "~> 0.3.3"},
+      {:mouth, "~> 0.4.0"},
       {:phoenix_ecto, "~> 3.2"},
       {:unicode_util_compat, "~> 0.2.0"},
       {:quantum, ">= 2.1.0"},
