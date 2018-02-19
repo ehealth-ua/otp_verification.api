@@ -51,7 +51,10 @@ config :otp_verification_api, :mouth,
   gateway_url: {:system, "GATEWAY_URL", "localhost:4000"},
   gateway_status_url: {:system, "GATEWAY_STATUS_URL", "localhost:4000"},
   login: {:system, "GATEWAY_LOGIN", "test"},
-  password: {:system, "GATEWAY_PASSWORD", "password"}
+  password: {:system, "GATEWAY_PASSWORD", "password"},
+  host: {:system, "TWILIO_HOST", "https://api.twilio.com"},
+  account_sid: {:system, "TWILIO_ACCOUNT_SID", "test"},
+  auth_token: {:system, "TWILIO_AUTH_TOKEN", "test"}
 
 # General application configuration
 # Configures the endpoint
