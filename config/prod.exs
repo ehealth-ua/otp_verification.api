@@ -39,6 +39,7 @@ config :otp_verification_api, OtpVerification.Web.Endpoint,
 config :otp_verification_api, OtpVerification.Scheduler,
   overlap: false,
   timezone: :utc,
+  timeout: 15_000,
   jobs: [
     sms_status_check: [
       schedule: "* * * * *",
