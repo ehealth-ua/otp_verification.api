@@ -54,7 +54,7 @@ defmodule OtpVerification.Mixfile do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Dependencies can be Hex packages:
@@ -92,7 +92,8 @@ defmodule OtpVerification.Mixfile do
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.7", only: [:dev, :test]},
       {:credo, ">= 0.5.1", only: [:dev, :test]},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:ex_machina, "~> 2.2", only: [:dev, :test]}
     ]
   end
 

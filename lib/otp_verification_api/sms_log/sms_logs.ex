@@ -57,7 +57,7 @@ defmodule OtpVerification.SMSLogs do
     Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, []))
   end
 
-  def update_sms_status(sms) do
+  defp update_sms_status(sms) do
     case Messenger.status(sms.gateway_id) do
       {_, [status: status, id: _id, datetime: datetime]} ->
         do_update_sms_status(sms, status, datetime)

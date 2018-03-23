@@ -1,14 +1,16 @@
 defmodule OtpVerification.Web.VerificationsControllerTest do
   use OtpVerification.Web.ConnCase
 
+  alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
+  alias OtpVerification.Web.Endpoint
 
   @create_attrs %{
     check_digit: 42,
     code: 42,
     phone_number: "+380631112233",
-    status: "new",
+    status: Verification.status(:new),
     code_expired_at: "2017-05-10T10:00:09.932834Z"
   }
 
@@ -30,11 +32,12 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
   describe "POST /verifications" do
     test "initialize verification", %{conn: conn} do
       conn = post(conn, "/verifications", %{phone_number: "+380631112233"})
+      status = Verification.status(:new)
 
       assert %{
                "id" => _,
                "code_expired_at" => _,
-               "status" => "new"
+               "status" => ^status
              } = json_response(conn, 201)["data"]
     end
 
@@ -72,9 +75,9 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
     test "complete verification", %{conn: conn} do
       verification = initialize_verification()
-
       conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
-      assert %{"status" => "verified"} = json_response(conn, 200)["data"]
+      status = Verification.status(:verified)
+      assert %{"status" => ^status} = json_response(conn, 200)["data"]
       assert length(Repo.all(VerifiedPhone)) == 1
     end
 
@@ -150,6 +153,23 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
       conn1 = get(conn, "/verifications/+380631112233")
       assert json_response(conn1, 200)
+    end
+  end
+
+  describe "testing errors callback" do
+    test "service unavailable error test", %{conn: conn} do
+      current_code_length = Application.get_env(:otp_verification_api, :code_length)
+      current_code_text = Application.get_env(:otp_verification_api, :code_text)
+
+      on_exit(fn ->
+        Application.put_env(:otp_verification_api, :code_length, current_code_length)
+        Application.put_env(:otp_verification_api, :code_text, current_code_text)
+      end)
+
+      Application.put_env(:otp_verification_api, :code_length, 0)
+      Application.put_env(:otp_verification_api, :code_text, "exception")
+      conn = post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
+      assert json_response(conn, 503)
     end
   end
 end

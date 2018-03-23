@@ -5,7 +5,7 @@ defmodule OtpVerification.Worker do
   alias OtpVerification.Verification.Verifications
 
   def start_link(worker_function, opts) do
-    GenServer.start_link(__MODULE__, call: worker_function, opts: opts)
+    GenServer.start_link(__MODULE__, [call: worker_function, opts: opts], name: __MODULE__)
   end
 
   def init(call: worker_function, opts: opts) do

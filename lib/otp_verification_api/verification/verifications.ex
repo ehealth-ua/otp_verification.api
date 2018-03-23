@@ -131,7 +131,7 @@ defmodule OtpVerification.Verification.Verifications do
       Map.merge(attrs, %{
         "check_digit" => checksum,
         "code" => otp_code,
-        "status" => "new",
+        "status" => Verification.status(:new),
         "code_expired_at" => code_expired_at
       })
     rescue
@@ -159,7 +159,11 @@ defmodule OtpVerification.Verification.Verifications do
   @spec verification_completed(verification :: Verification.t()) :: tuple()
   defp verification_completed(%Verification{} = verification) do
     verification
-    |> update_verification(%{status: "verified", active: false, attempts_count: verification.attempts_count + 1})
+    |> update_verification(%{
+      status: Verification.status(:verified),
+      active: false,
+      attempts_count: verification.attempts_count + 1
+    })
     |> Tuple.append(:verified)
   end
 
@@ -171,7 +175,7 @@ defmodule OtpVerification.Verification.Verifications do
     attrs =
       if attempts_count < max_attempts,
         do: %{attempts_count: attempts_count},
-        else: %{status: "unverified", active: false, attempts_count: attempts_count}
+        else: %{status: Verification.status(:unverified), active: false, attempts_count: attempts_count}
 
     verification
     |> update_verification(attrs)
@@ -215,26 +219,12 @@ defmodule OtpVerification.Verification.Verifications do
     Repo.delete(verification)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking verification changes.
-
-  ## Examples
-
-      iex> change_verification(verification)
-      %Ecto.Changeset{}
-
-  """
-  @spec change_verification(verification :: Verification.t()) :: Ecto.Changeset.t()
-  def change_verification(%Verification{} = verification) do
-    verification_changeset(verification, %{})
-  end
-
   @spec verification_changeset(verification :: Verification.t(), %{}) :: Ecto.Changeset.t()
   defp verification_changeset(%Verification{} = verification, attrs) do
     verification
     |> cast(attrs, [:phone_number, :check_digit, :status, :code, :code_expired_at, :active, :attempts_count])
     |> validate_required([:phone_number, :check_digit, :status, :code, :code_expired_at])
-    |> validate_inclusion(:status, ["new", "verified", "unverified", "completed"])
+    |> validate_inclusion(:status, Verification.status_options())
     |> PhoneNumber.validate_phone_number(:phone_number)
   end
 
@@ -257,13 +247,18 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec generate_otp_code :: {pos_integer(), pos_integer()}
   defp generate_otp_code do
-    {:ok, otp_code, _, checksum} =
-      :otp_verification_api
-      |> Confex.get(:code_length)
-      |> get_number()
-      |> Luhn.calculate()
+    case Confex.get(:otp_verification_api, :code_length) do
+      0 ->
+        {"", nil}
 
-    {otp_code, checksum}
+      code_length ->
+        {:ok, otp_code, _, checksum} =
+          code_length
+          |> get_number()
+          |> Luhn.calculate()
+
+        {otp_code, checksum}
+    end
   end
 
   @spec get_code_expiration_time :: String.t()
@@ -276,7 +271,7 @@ defmodule OtpVerification.Verification.Verifications do
     Verification
     |> where(phone_number: ^phone_number)
     |> where(active: true)
-    |> Repo.update_all(set: [active: false, status: "canceled"])
+    |> Repo.update_all(set: [active: false, status: Verification.status(:canceled)])
   end
 
   @spec cancel_expired_verifications() :: {integer, nil | [term]} | no_return
@@ -284,6 +279,6 @@ defmodule OtpVerification.Verification.Verifications do
     Verification
     |> where(active: true)
     |> where([v], v.code_expired_at < ^Timex.now())
-    |> Repo.update_all(set: [active: false, status: "expired"])
+    |> Repo.update_all(set: [active: false, status: Verification.status(:expired)])
   end
 end
