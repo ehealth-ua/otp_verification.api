@@ -226,6 +226,7 @@ defmodule OtpVerification.Verification.Verifications do
     |> validate_required([:phone_number, :check_digit, :status, :code, :code_expired_at])
     |> validate_inclusion(:status, Verification.status_options())
     |> PhoneNumber.validate_phone_number(:phone_number)
+    |> unique_constraint(:phone_number, name: :verifications_phone_number_index)
   end
 
   @spec verification_changeset(verification :: Verification.t(), %{}) :: Ecto.Changeset.t()
