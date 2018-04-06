@@ -1,7 +1,7 @@
 defmodule OtpVerification.Mixfile do
   use Mix.Project
 
-  @version "1.45.7"
+  @version "1.45.8"
 
   def project do
     [
