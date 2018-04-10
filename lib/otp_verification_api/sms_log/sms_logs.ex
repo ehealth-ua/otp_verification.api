@@ -54,7 +54,7 @@ defmodule OtpVerification.SMSLogs do
   end
 
   defp collect_status_updates(sms_collection) do
-    Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, []))
+    Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, [], timeout: 20_000))
   end
 
   def update_sms_status(sms) do
