@@ -269,9 +269,15 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec deactivate_verifications(phone_number :: Integer.t()) :: {integer, nil | [term]} | no_return
   defp deactivate_verifications(phone_number) do
+    verification_ids =
+      Verification
+      |> select([v], v.id)
+      |> where(phone_number: ^phone_number)
+      |> where(active: true)
+      |> Repo.all()
+
     Verification
-    |> where(phone_number: ^phone_number)
-    |> where(active: true)
+    |> where([v], v.id in ^verification_ids)
     |> Repo.update_all(set: [active: false, status: Verification.status(:canceled)])
   end
 
