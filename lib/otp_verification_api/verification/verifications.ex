@@ -9,6 +9,7 @@ defmodule OtpVerification.Verification.Verifications do
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
   alias EView.Changeset.Validators.PhoneNumber
+  require Logger
 
   @doc """
   Returns the list of verifications.
@@ -135,7 +136,17 @@ defmodule OtpVerification.Verification.Verifications do
         "code_expired_at" => code_expired_at
       })
     rescue
-      Mouth.ApiError -> {:error, :service_unavailable}
+      e in Mouth.ApiError ->
+        Logger.error(fn ->
+          Poison.encode!(%{
+            "log_type" => "http_request",
+            "action" => "POST",
+            "request_id" => Logger.metadata()[:request_id],
+            "body" => e.message
+          })
+        end)
+
+        {:error, :service_unavailable}
     end
   end
 
