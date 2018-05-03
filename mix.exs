@@ -93,7 +93,8 @@ defmodule OtpVerification.Mixfile do
       {:excoveralls, "~> 0.7", only: [:dev, :test]},
       {:credo, ">= 0.5.1", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:ex_machina, "~> 2.2", only: [:dev, :test]}
+      {:ex_machina, "~> 2.2", only: [:dev, :test]},
+      {:nex_json_schema, ">= 0.7.2"}
     ]
   end
 
