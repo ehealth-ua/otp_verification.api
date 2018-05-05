@@ -1,6 +1,7 @@
 defmodule OtpVerification.Web.VerificationsControllerTest do
   use OtpVerification.Web.ConnCase
 
+  alias OtpVerification.Redix
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
@@ -26,6 +27,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   setup do
     conn = put_req_header(build_conn(), "content-type", "application/json")
+    Redix.command(["FLUSHALL"])
     {:ok, conn: conn}
   end
 
@@ -39,6 +41,22 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
                "code_expired_at" => _,
                "status" => ^status
              } = json_response(conn, 201)["data"]
+    end
+
+    test "initialize verification too many requests", %{conn: conn} do
+      System.put_env("INIT_VERIFICATION_LIMIT", "5")
+      conn = post(conn, "/verifications", %{phone_number: "+380631112230"})
+      status = Verification.status(:new)
+
+      assert %{
+               "id" => _,
+               "code_expired_at" => _,
+               "status" => ^status
+             } = json_response(conn, 201)["data"]
+
+      conn = post(conn, "/verifications", %{phone_number: "+380631112230"})
+      assert json_response(conn, 429)
+      System.put_env("INIT_VERIFICATION_LIMIT", "0")
     end
 
     test "creating new verification with same number deactivates older ones", %{conn: conn} do
@@ -89,7 +107,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
 
     test "code has been expired", %{conn: conn} do
-      default_expiration = Confex.get(:otp_verification_api, :code_expiration_period)
+      default_expiration = Confex.fetch_env!(:otp_verification_api, :code_expiration_period)
       System.put_env("CODE_EXPIRATION_PERIOD_MINUTES", "0")
       verification = initialize_verification()
       conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})

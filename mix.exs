@@ -73,7 +73,7 @@ defmodule OtpVerification.Mixfile do
   defp deps do
     [
       {:distillery, "~> 1.4.0"},
-      {:confex, "~> 1.4"},
+      {:confex, "~> 3.3"},
       {:poison, "~> 3.1"},
       {:ecto, "~> 2.1"},
       {:postgrex, "~> 0.13.2"},
@@ -89,6 +89,7 @@ defmodule OtpVerification.Mixfile do
       {:plug_logger_json, "~> 0.5"},
       {:ecto_logger_json, "~> 0.1"},
       {:timex, "~> 3.1"},
+      {:redix, "~> 0.7.1"},
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.7", only: [:dev, :test]},
       {:credo, ">= 0.5.1", only: [:dev, :test]},

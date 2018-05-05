@@ -69,6 +69,16 @@ config :logger, :console,
   handle_otp_reports: true,
   level: :info
 
+config :otp_verification_api, OtpVerification.Redix,
+  host: {:system, "REDIS_HOST", "0.0.0.0"},
+  port: {:system, :integer, "REDIS_PORT", 6379},
+  password: {:system, "REDIS_PASSWORD", nil},
+  database: {:system, "REDIS_DATABASE", nil},
+  pool_size: {:system, :integer, "REDIS_POOL_SIZE", 5}
+
+config :otp_verification_api, OtpVerification.Verification.Verifications,
+  init_verification_limit: {:system, :integer, "INIT_VERIFICATION_LIMIT", 0}
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
