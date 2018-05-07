@@ -10,7 +10,8 @@ config :otp_verification_api, OtpVerification.Repo,
   username: {:system, "DB_USER"},
   password: {:system, "DB_PASSWORD"},
   hostname: {:system, "DB_HOST"},
-  port: {:system, :integer, "DB_PORT"}
+  port: {:system, :integer, "DB_PORT"},
+  pool_size: {:syster, "DB_POOL_SIZE"}
 
 # For production, we often load configuration from external
 # sources, such as your system environment. For this reason,
