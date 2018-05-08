@@ -5,12 +5,13 @@ defmodule OtpVerification.Repo do
   More info: https://hexdocs.pm/ecto/Ecto.Repo.html
   """
   use Ecto.Repo, otp_app: :otp_verification_api
+  alias Confex.Resolver
 
   @doc """
   Dynamically loads the repository configuration from the environment variables.
   """
   def init(_, config) do
-    config = Confex.process_env(config)
+    config = Resolver.resolve!(config)
 
     unless config[:database] do
       raise "Set DB_NAME environment variable!"

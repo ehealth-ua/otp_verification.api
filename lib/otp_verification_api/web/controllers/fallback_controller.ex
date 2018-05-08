@@ -23,6 +23,13 @@ defmodule OtpVerification.Web.FallbackController do
     |> render(EView.Views.Error, :"404")
   end
 
+  def call(conn, {:error, :too_many_requests}) do
+    conn
+    |> put_status(429)
+    |> put_resp_content_type("application/json")
+    |> send_resp(429, Poison.encode!(%{message: "too many requests"}))
+  end
+
   def call(conn, {:error, :service_unavailable}) do
     conn
     |> put_status(503)

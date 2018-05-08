@@ -41,7 +41,7 @@ defmodule OtpVerification.SMSLogs do
   end
 
   def status_check_job do
-    sms_expiration = Confex.get(:otp_verification_api, :sms_statuses_expiration)
+    sms_expiration = Confex.fetch_env!(:otp_verification_api, :sms_statuses_expiration)
     sms_collection = find_sms_for_status_check(sms_expiration)
     collect_status_updates(sms_collection)
   end

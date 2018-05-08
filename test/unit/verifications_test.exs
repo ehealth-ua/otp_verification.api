@@ -1,10 +1,17 @@
 defmodule OtpVerification.VerificationsTest do
+  @moduledoc false
+
   use OtpVerification.DataCase
   import OtpVerification.Factory
-
+  alias OtpVerification.Redix
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
+
+  setup do
+    Redix.command(["FLUSHALL"])
+    :ok
+  end
 
   @create_attrs %{
     check_digit: 42,
@@ -86,6 +93,14 @@ defmodule OtpVerification.VerificationsTest do
                Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
 
       assert verification.attempts_count == 0
+    end
+
+    test "too many requests" do
+      System.put_env("INIT_VERIFICATION_LIMIT", "5")
+      assert {:ok, %Verification{}} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
+      assert {:error, :too_many_requests} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
+      assert {:ok, %Verification{}} = Verifications.initialize_verification(%{"phone_number" => "+380637654434"})
+      System.put_env("INIT_VERIFICATION_LIMIT", "0")
     end
 
     test "initializing verification with same phone number deactivates all records with same phone number" do

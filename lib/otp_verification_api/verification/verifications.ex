@@ -4,12 +4,14 @@ defmodule OtpVerification.Verification.Verifications do
   """
 
   import Ecto.{Query, Changeset}, warn: false
+  alias OtpVerification.Redix
   alias OtpVerification.Repo
   alias OtpVerification.SMSLogs
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
   alias EView.Changeset.Validators.PhoneNumber
   require Logger
+  use Confex, otp_app: :otp_verification_api
 
   @doc """
   Returns the list of verifications.
@@ -105,7 +107,8 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t()} | {:error, Ecto.Changeset.t()}
   def initialize_verification(attrs) do
-    with %{} = attrs <- initialize_attrs(attrs) do
+    with :ok <- validate_initialize_frequency(attrs, config()[:init_verification_limit]),
+         %{} = attrs <- initialize_attrs(attrs) do
       deactivate_verifications(attrs["phone_number"])
 
       %Verification{}
@@ -114,12 +117,25 @@ defmodule OtpVerification.Verification.Verifications do
     end
   end
 
-  @spec initialize_verification(%{}) :: %{}
+  defp validate_initialize_frequency(attrs, limit) when is_integer(limit) and limit > 0 do
+    key = "initialize:#{attrs["phone_number"]}"
+
+    with {:ok, 1} <- Redix.setnx(key, true),
+         {:ok, "OK"} <- Redix.setex(key, true, limit) do
+      :ok
+    else
+      _ -> {:error, :too_many_requests}
+    end
+  end
+
+  defp validate_initialize_frequency(_, _), do: :ok
+
+  @spec initialize_attrs(%{}) :: %{}
   defp initialize_attrs(attrs) do
     {otp_code, checksum} = generate_otp_code()
     code_expired_at = get_code_expiration_time()
 
-    sms_text = :otp_verification_api |> Confex.get(:code_text) |> Kernel.<>(to_string(otp_code))
+    sms_text = :otp_verification_api |> Confex.fetch_env!(:code_text) |> Kernel.<>(to_string(otp_code))
 
     try do
       {:ok, _} =
@@ -180,7 +196,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec verification_does_not_completed(verification :: Verification.t(), error :: atom) :: tuple()
   defp verification_does_not_completed(%Verification{} = verification, error) do
-    max_attempts = Confex.get(:otp_verification_api, :max_attempts)
+    max_attempts = Confex.fetch_env!(:otp_verification_api, :max_attempts)
     attempts_count = verification.attempts_count + 1
 
     attrs =
@@ -259,7 +275,7 @@ defmodule OtpVerification.Verification.Verifications do
 
   @spec generate_otp_code :: {pos_integer(), pos_integer()}
   defp generate_otp_code do
-    case Confex.get(:otp_verification_api, :code_length) do
+    case Confex.fetch_env!(:otp_verification_api, :code_length) do
       0 ->
         {"", nil}
 
@@ -276,7 +292,9 @@ defmodule OtpVerification.Verification.Verifications do
   @spec get_code_expiration_time :: String.t()
   defp get_code_expiration_time,
     do:
-      DateTime.to_iso8601(Timex.shift(Timex.now(), minutes: Confex.get(:otp_verification_api, :code_expiration_period)))
+      DateTime.to_iso8601(
+        Timex.shift(Timex.now(), minutes: Confex.fetch_env!(:otp_verification_api, :code_expiration_period))
+      )
 
   @spec deactivate_verifications(phone_number :: Integer.t()) :: {integer, nil | [term]} | no_return
   defp deactivate_verifications(phone_number) do
