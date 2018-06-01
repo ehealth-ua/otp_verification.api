@@ -75,13 +75,9 @@ defmodule OtpVerification.SMSLogs do
       })
 
     update_query =
-      cond do
-        DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -30)) in [:lt, :eq] ->
-          put_change(update_query, :gateway_status, "Terminated")
-
-        true ->
-          update_query
-      end
+      if DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -30)) in [:lt, :eq],
+        do: put_change(update_query, :gateway_status, "Terminated"),
+        else: update_query
 
     Repo.update(update_query)
   end
