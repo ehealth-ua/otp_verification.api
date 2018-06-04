@@ -21,6 +21,7 @@ defmodule OtpVerification.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import OtpVerification.Factory
     end
   end
 
