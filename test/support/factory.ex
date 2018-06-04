@@ -1,6 +1,7 @@
 defmodule OtpVerification.Factory do
   use ExMachina.Ecto, repo: OtpVerification.Repo
   alias OtpVerification.Verification.Verification
+  alias Ecto.UUID
 
   def verification_factory do
     %Verification{
@@ -22,11 +23,12 @@ defmodule OtpVerification.Factory do
 
   def sms_logs_factory do
     %OtpVerification.SMSLog.Schema{
+      id: UUID.generate(),
       phone_number: "+380960000000",
       body: "test",
       gateway_id: "gateway_id",
       gateway_status: "Accepted",
-      status_changed_at: Timex.now(),
+      inserted_at: Timex.now(),
       type: ""
     }
   end
