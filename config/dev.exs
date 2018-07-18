@@ -15,6 +15,16 @@ config :otp_verification_api, OtpVerification.Web.Endpoint,
   check_origin: false,
   watchers: []
 
+config :otp_verification_api, OtpVerification.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: "otp_verification_api_dev",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost",
+  port: 5432,
+  pool_size: 10,
+  loggers: [{Ecto.LoggerJSON, :log, [:info]}]
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20

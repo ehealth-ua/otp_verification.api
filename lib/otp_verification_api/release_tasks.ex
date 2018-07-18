@@ -1,10 +1,10 @@
-defmodule :otp_verification_api_tasks do
+defmodule OtpVerification.ReleaseTasks do
   @moduledoc """
   Nice way to apply migrations inside a released application.
 
   Example:
 
-      otp_verification_api/bin/otp_verification_api command otp_verification_api_tasks migrate!
+      otp_verification_api/bin/otp_verification_api command Elixir.OtpVerification.ReleaseTasks migrate!
   """
   import Mix.Ecto, warn: false
 
@@ -43,7 +43,7 @@ defmodule :otp_verification_api_tasks do
   end
 
   defp load_app do
-    start_applications([:logger, :postgrex, :ecto])
+    start_applications([:logger, :postgrex, :ecto, :redix])
     :ok = Application.load(:otp_verification_api)
   end
 

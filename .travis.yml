@@ -13,9 +13,9 @@ addons:
     packages:
       - docker-ce
 elixir:
-  - 1.6.0
+  - 1.6.6
 otp_release:
-  - 20.2
+  - 20.3.8
 notifications:
   slack:
     rooms:
@@ -23,11 +23,10 @@ notifications:
     on_success: always
 env:
   global:
-    - Chart=verification
     - MIX_ENV=test
-    - DOCKER_HUB_ACCOUNT=edenlabllc
-    - MAIN_BRANCHES="master develop preprod" # Branches on which you want version to be incremented
-    - RELEASE_BRANCH="develop"
+    - APPS='{"otp_verification_api":"verification"}'
+    - POSTGRES_VERSION=9.6
+    - DOCKER_NAMESPACE=edenlabllc
     # Docker and GitHub credentials
     - secure: "L5HiFjgHedpF/cz4wU4XAAVr5ZtWDZQgJ/LnHsNNfq2obnqahN4qK3ThVjpOpq734eAJekDvsJ1Bbebb4+wv7KAnpH0S8BXaSvNiuFiBVS0Vf1TC3VHgnqXSCTbwoBfKsRrg1YlUi3N4MHBLRZ0bViJNkxGL2RpHM0pg+Q7CJt/Qpyl9kLUi6wWVuUoov9MebOKT9fu2VMHWFjPj3gmZMv8RvaNUVBgxqciKi9gKPe8PQUBck/NOSPwsW21DQ71AljODl0zN+7HUOeM25DJL8EBZBpsypcMuy+OsQM99yg8/L8gkD4V+iaz/Xy+tbVaSiqXCoEFaGJ37rYKvVSMRLevPkwqk82MTscD5OOfyiWLX3JHCBP5HYVMOwvE6YRFHWnr2PuxkaMMjPCsv9PCCMqkcjggWrielfe+dU6MORB3Z5CIOS57SWiuaZU4cT3uT16c46SniWXniPdbspSr15YLmEFI2on5VYtAh+SbRZr6lPSJmAFmFB2OGiLcN6FrwOE19sN4HSMnfkqB7LXR7W3maLNYMawiJtC002J/RJZRO6LeeEglQI5fnfw2CjT6wZ2s7zRJAENiCy2I2uF06zBo2tInUwfhFYdIAUERaFDf+dSrSumnm+bVyUfcuin38iNPjLxC63PSt25k1r0ufndGJ5iWVU28oQAQPdcC6kqs="
     - secure: "N38rwLSObT1wr1xKxXh3Wv5P584y1cE7OXxaYj76yeH9YXCT2cpHHqVY7/ASFHhtYbOzffj1ETMbRqOF9gfn5yephrXDjiauGmc3w2ce6TFiUtMi0Hm9FXLLChbp1ghyZ9BM9rPWn7JFTGrM9s5HtiRGnp4FM4O47z9jAwcmLsDoWurJFD0Aw6VPEOylUA0pkbwTy/sCV1DpGKEUSthYO9uZHxTKxYZEiMQvsBfQ0K22I78cTkV4MsbaSQqs3Y5EJHTyBodCAbP4K/hjR2UA2BQ6U2JpJXjiT5ahoINR4QRllr2sAJWoG1YbxpQiNdA71mtKKR7/7DNGWfrGjmoHN4SycwJwXaw3eYIOyE9JvKfNgz3Mnre3eApDzLQ4YHx8d5CaWWYqjWL3Qm8TUilyOSWB3f31VELDEuiEbnc8DaBQ5lGblyHeb+Y9Adp1MrZHoPciCADan9NL7H1yHvyqfzMiO0k/GPPkliQQ06DsyTNzzxB82gQw0g2bKPOZ9m9YTGs3eHVj60UxAD9VqbYnql3Iu7513y/6zjMXhdtxYspKEcoHoHcwtFRP8mhz23Y1ASo9pxU26t6vLxAe0VU0HyI+xlnVYPGCVq03fK7dkj2Iyw5YjMq5qHs6vqTSGFdmgh3YlIlomhW5o59NpSyD9HGWrNBgxNxFa9Oyq93sAcA="
@@ -35,23 +34,20 @@ branches:
   # Releases are generated automatically, stop infinite build loop
   except:
     - /[0-9]*\.[0-9]*\.[0-9]*/
+before_script:
+  - sudo service redis-server stop
+  - sudo redis-server /etc/redis/redis.conf --bind 0.0.0.0
 before_install:
-  # Expose MQ and DB to Docker container
-  - sudo ./bin/ci/init-db.sh
-script:
-  # Increment version in mix.exs
-  - ./bin/ci/version-increment.sh || travis_terminate 1
-  # Install dependencies
-  - mix deps.get || travis_terminate 1
-  - ./bin/mix_tests.sh || travis_terminate 1
-  # Build Docker container
-  - ./bin/build.sh
-  # Initialize DB for Docker container
-  - MIX_ENV=dev mix ecto.setup
-  # Run Docker container
-  - sudo ./bin/start.sh || travis_terminate 1
-  # Run acceptance tests on Docker container
-  - "CONTAINER_HTTP_HOST=localhost CONTAINER_HTTP_PORT=4000 mix test test/acceptance"
-  - ./bin/ci/push.sh || travis_terminate 1
-  - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
-  - sudo ./bin/deploy.sh || travis_terminate 1
+- sudo apt-get install jq
+- curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella/init-db.sh -o init-db.sh; sudo sh ./init-db.sh
+jobs:
+  include:
+    - stage: "test and build"
+      # run tests
+      script: (curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella/tests.sh -o tests.sh; bash ./tests.sh) || travis_terminate 1
+      # Build Docker container
+    - stage: "test and build"
+      # "Decrypting deploy key..."
+      script:
+      - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
+      - (curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella/docker.sh -o docker.sh; bash ./docker.sh) || travis_terminate 1

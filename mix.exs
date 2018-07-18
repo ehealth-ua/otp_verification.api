@@ -1,14 +1,12 @@
 defmodule OtpVerification.Mixfile do
   use Mix.Project
 
-  @version "1.45.19"
-
   def project do
     [
       app: :otp_verification_api,
       description: "Add description to your package.",
       package: package(),
-      version: @version,
+      version: "0.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
@@ -18,13 +16,7 @@ defmodule OtpVerification.Mixfile do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [coveralls: :test],
-      docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]],
-      dialyzer: [
-        plt_add_deps: [:project, :plug, :phoenix_pubsub],
-        paths: [
-          "_build/dev/lib/otp_verification_api/ebin"
-        ]
-      ]
+      docs: [source_ref: "v#\{@version\}", main: "readme", extras: ["README.md"]]
     ]
   end
 
@@ -33,22 +25,7 @@ defmodule OtpVerification.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      extra_applications: [
-        :logger,
-        :confex,
-        :runtime_tools,
-        :poison,
-        :ecto,
-        :postgrex,
-        :cowboy,
-        :httpoison,
-        :phoenix,
-        :eview,
-        :unicode_util_compat,
-        :jvalid,
-        :mouth,
-        :phoenix_ecto
-      ],
+      extra_applications: [:logger, :runtime_tools],
       mod: {OtpVerification, []}
     ]
   end
@@ -93,7 +70,6 @@ defmodule OtpVerification.Mixfile do
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.7", only: [:dev, :test]},
       {:credo, ">= 0.5.1", only: [:dev, :test]},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
       {:nex_json_schema, ">= 0.7.2"}
     ]

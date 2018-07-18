@@ -32,16 +32,6 @@ config :otp_verification_api,
   code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15},
   sms_statuses_expiration: {:system, :integer, "SMS_STATUSES_EXPIRATION", 32}
 
-# Configure your database
-config :otp_verification_api, OtpVerification.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  database: {:system, "DB_NAME", "otp_verification_api_dev"},
-  username: {:system, "DB_USER", "postgres"},
-  password: {:system, "DB_PASSWORD", "postgres"},
-  hostname: {:system, "DB_HOST", "localhost"},
-  port: {:system, :integer, "DB_PORT", 5432},
-  loggers: [{Ecto.LoggerJSON, :log, [:info]}]
-
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 

@@ -5,8 +5,12 @@ config :ex_unit, capture_log: true
 
 # Configure your database
 config :otp_verification_api, OtpVerification.Repo,
+  adapter: Ecto.Adapters.Postgres,
   pool: Ecto.Adapters.SQL.Sandbox,
-  database: {:system, "DB_NAME", "otp_verification_api_test"},
+  username: "postgres",
+  password: "postgres",
+  database: "otp_verification_api_test",
+  hostname: "localhost",
   ownership_timeout: 120_000_000
 
 # We don't run a server during test. If one is required,
