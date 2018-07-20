@@ -16,7 +16,7 @@ environment :default do
 end
 
 release :otp_verification_api do
-  set(version: "0.1.0")
+  set(version: current_version(:otp_verification_api))
 
   set(
     applications: [
