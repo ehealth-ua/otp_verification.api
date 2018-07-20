@@ -1,4 +1,4 @@
-FROM edenlabllc/elixir:1.5.2 as builder
+FROM elixir:1.6.6-alpine as builder
 
 ARG APP_NAME
 
@@ -8,7 +8,7 @@ WORKDIR /app
 
 ENV MIX_ENV=prod
 
-RUN apk add --no-cache erlang-xmerl
+RUN apk add --no-cache erlang-xmerl git
 RUN mix do \
       local.hex --force, \
       local.rebar --force, \

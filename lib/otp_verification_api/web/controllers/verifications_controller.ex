@@ -3,8 +3,8 @@ defmodule OtpVerification.Web.VerificationsController do
   use OtpVerification.Web, :controller
   use JValid
 
-  alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.Verification
+  alias OtpVerification.Verification.Verifications
   alias OtpVerification.Verification.VerifiedPhone
 
   action_fallback(OtpVerification.Web.FallbackController)

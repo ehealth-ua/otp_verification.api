@@ -8,8 +8,8 @@ defmodule OtpVerification.SMSLogs do
   import Ecto.Query
   import Mouth.Message
 
-  alias OtpVerification.Repo
   alias OtpVerification.Messenger
+  alias OtpVerification.Repo
   alias OtpVerification.SMSLog.Schema, as: SMSLog
 
   def save_and_send_sms(%{"phone_number" => phone_number, "body" => body} = params) do

@@ -4,12 +4,12 @@ defmodule OtpVerification.Verification.Verifications do
   """
 
   import Ecto.{Query, Changeset}, warn: false
+  alias EView.Changeset.Validators.PhoneNumber
   alias OtpVerification.Redix
   alias OtpVerification.Repo
   alias OtpVerification.SMSLogs
   alias OtpVerification.Verification.Verification
   alias OtpVerification.Verification.VerifiedPhone
-  alias EView.Changeset.Validators.PhoneNumber
   require Logger
   use Confex, otp_app: :otp_verification_api
 

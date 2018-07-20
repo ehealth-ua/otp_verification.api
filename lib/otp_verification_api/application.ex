@@ -4,9 +4,9 @@ defmodule OtpVerification do
   """
 
   use Application
-  alias OtpVerification.Web.Endpoint
   alias Confex.Resolver
   alias OtpVerification.Redix, as: VerificationRedix
+  alias OtpVerification.Web.Endpoint
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
