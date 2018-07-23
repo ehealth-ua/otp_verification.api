@@ -49,12 +49,13 @@ defmodule OtpVerification.SMSLogs do
   defp find_sms_for_status_check(minutes) do
     SMSLog
     |> where([sms], sms.inserted_at > ^Timex.shift(Timex.now(), minutes: -minutes))
-    |> where([sms], sms.gateway_status in ^["Accepted", "Enroute", "Unknown"])
+    |> where([sms], sms.gateway_status in ^[SMSLog.status(:accepted), SMSLog.status(:enroute), SMSLog.status(:unknown)])
     |> Repo.all()
   end
 
   defp collect_status_updates(sms_collection) do
-    Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, [], timeout: 20_000))
+    sms_collect_timeout = Confex.fetch_env!(:otp_verification_api, :sms_collect_timeout)
+    Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, [], timeout: sms_collect_timeout))
   end
 
   def update_sms_status(sms) do
@@ -68,11 +69,16 @@ defmodule OtpVerification.SMSLogs do
   end
 
   def do_update_sms_status(sms, status, datetime) do
+    sms_update_timeout = Confex.fetch_env!(:otp_verification_api, :sms_update_timeout)
+
+    should_update_sms_status =
+      DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -sms_update_timeout)) in [:lt, :eq]
+
     update_query = change(sms, gateway_status: status)
 
     update_query =
-      if DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -30)) in [:lt, :eq],
-        do: put_change(update_query, :gateway_status, "Terminated"),
+      if should_update_sms_status,
+        do: put_change(update_query, :gateway_status, SMSLog.status(:terminated)),
         else: update_query
 
     if get_change(update_query, :gateway_status) do
