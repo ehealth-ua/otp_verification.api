@@ -13,4 +13,14 @@ defmodule OtpVerification.SMSLog.Schema do
     field(:type, :string, null: false)
     timestamps(type: :utc_datetime, updated_at: false)
   end
+
+  @gateway_status_accepted "Accepted"
+  @gateway_status_enroute "Enroute"
+  @gateway_status_unknown "Unknown"
+  @gateway_status_terminated "Terminated"
+
+  def status(:accepted), do: @gateway_status_accepted
+  def status(:enroute), do: @gateway_status_enroute
+  def status(:unknown), do: @gateway_status_unknown
+  def status(:terminated), do: @gateway_status_terminated
 end
