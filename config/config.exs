@@ -30,9 +30,9 @@ config :otp_verification_api,
   code_text: {:system, :string, "OTP_CODE_TEXT", "Код авторизації дій в системі eHealth: "},
   code_length: {:system, :integer, "OTP_CODE_LENGTH", 4},
   code_expiration_period: {:system, :integer, "CODE_EXPIRATION_PERIOD_MINUTES", 15},
-  sms_statuses_expiration: {:system, :integer, "SMS_STATUSES_EXPIRATION", 32},
+  sms_statuses_expiration: {:system, :integer, "SMS_STATUSES_EXPIRATION_MINUTES", 32},
   sms_update_timeout: {:system, :integer, "SMS_UPDATE_TIMEOUT_MINUTES", 30},
-  sms_collect_timeout: {:system, :integer, "SMS_COLLECT_TIMEOUT_MINUTES", 20_000}
+  sms_collect_timeout: {:system, :integer, "SMS_COLLECT_TIMEOUT", 20_000}
 
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
