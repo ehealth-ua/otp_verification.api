@@ -82,8 +82,9 @@ defmodule OtpVerification.SMSLogs do
         else: update_query
 
     if get_change(update_query, :gateway_status) do
-      put_change(update_query, :status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
-      Repo.update(update_query)
+      update_query
+      |> put_change(:status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
+      |> Repo.update()
     end
   end
 end
