@@ -1,17 +1,5 @@
 {
-  "skip_files": [
-    "test/*",
-    "lib/otp_verification_api/application.ex",
-    "lib/otp_verification_api/repo.ex",
-    "lib/otp_verification_api/scheduler.ex",
-    "lib/otp_verification_api/sms_log/sms_log.ex",
-    "lib/otp_verification_api/tasks.ex",
-    "lib/otp_verification_api/verification/verification.ex",
-    "lib/otp_verification_api/verification/verified_phone.ex",
-    "lib/otp_verification_api/web/endpoint.ex",
-    "lib/otp_verification_api/web/web.ex",
-    "lib/otp_verification_api/web/router.ex"
-  ],
+  "skip_files": [],
   "custom_stop_words": [
     "field",
     "has_one",
