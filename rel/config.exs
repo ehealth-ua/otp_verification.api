@@ -2,17 +2,17 @@ use Mix.Releases.Config,
   default_release: :default,
   default_environment: :default
 
-cookie =
-  :sha256
-  |> :crypto.hash(System.get_env("ERLANG_COOKIE") || "rzn+us8+3v9B4B0r7jzY1sZ6yhBuh+d1tBdSbncqhZED3+wrpefeLQjxJKOosODS")
-  |> Base.encode64()
-
 environment :default do
-  set(pre_start_hook: "bin/hooks/pre-start.sh")
+  set(pre_start_hooks: "bin/hooks/")
   set(dev_mode: false)
   set(include_erts: true)
   set(include_src: false)
-  set(cookie: cookie)
+
+  set(
+    overlays: [
+      {:template, "rel/templates/vm.args.eex", "releases/<%= release_version %>/vm.args"}
+    ]
+  )
 end
 
 release :otp_verification_api do
@@ -21,6 +21,60 @@ release :otp_verification_api do
   set(
     applications: [
       otp_verification_api: :permanent
+    ]
+  )
+
+  set(
+    config_providers: [
+      {Toml.Provider, [path: "/app/config.toml"]}
+    ]
+  )
+end
+
+release :sms_status_updater do
+  set(version: current_version(:sms_status_updater))
+
+  set(
+    applications: [
+      sms_status_updater: :permanent
+    ]
+  )
+
+  set(
+    config_providers: [
+      {Toml.Provider, [path: "/app/config.toml"]}
+    ]
+  )
+end
+
+release :deactivator do
+  set(version: current_version(:deactivator))
+
+  set(
+    applications: [
+      deactivator: :permanent
+    ]
+  )
+
+  set(
+    config_providers: [
+      {Toml.Provider, [path: "/app/config.toml"]}
+    ]
+  )
+end
+
+release :terminator do
+  set(version: current_version(:terminator))
+
+  set(
+    applications: [
+      terminator: :permanent
+    ]
+  )
+
+  set(
+    config_providers: [
+      {Toml.Provider, [path: "/app/config.toml"]}
     ]
   )
 end

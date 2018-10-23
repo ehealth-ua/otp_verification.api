@@ -31,6 +31,7 @@ LICENSE.md
 
 # Ignore docs
 *.apib
+docs
 
 # Ignore other CI configuration and scripts
 coveralls.json
