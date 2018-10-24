@@ -10,11 +10,10 @@ defmodule Terminator.WorkersTest do
 
   test "worker test when validations_expired_timeout is defined" do
     expect(WorkerMock, :stop_application, fn -> :ok end)
-    current_value = Application.get_env(:terminator, :validations_expired_timeout)
-    Application.put_env(:terminator, :validations_expired_timeout, 2)
+    current_value = System.get_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS")
+    System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", "2")
 
     verification_in = insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -1)})
-
     verification_out = insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -3)})
 
     {:ok, _pid} = GenServer.start_link(Worker, [])
@@ -29,14 +28,14 @@ defmodule Terminator.WorkersTest do
     refute verification_out.id in verification_ids
 
     on_exit(fn ->
-      Application.put_env(:terminator, :validations_expired_timeout, current_value)
+      System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", to_string(current_value))
     end)
   end
 
   test "worker test when validations_expired_timeout is not defined" do
     expect(WorkerMock, :stop_application, fn -> :ok end)
-    current_value = Application.get_env(:terminator, :validations_expired_timeout)
-    Application.put_env(:terminator, :validations_expired_timeout, nil)
+    current_value = System.get_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS")
+    System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", "")
 
     insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -1)})
     insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -3)})
@@ -47,7 +46,7 @@ defmodule Terminator.WorkersTest do
     assert length(Verifications.list_verifications()) == 2
 
     on_exit(fn ->
-      Application.put_env(:terminator, :validations_expired_timeout, current_value)
+      System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", to_string(current_value))
     end)
   end
 end

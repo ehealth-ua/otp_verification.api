@@ -23,7 +23,7 @@ defmodule Terminator.Worker do
 
   @impl true
   def handle_info(:run, state) do
-    validations_expired_timeout = Confex.fetch_env!(:terminator, :validations_expired_timeout)
+    validations_expired_timeout = config()[:validations_expired_timeout]
     {deleted_records_count, _} = delete_expired_verifications(validations_expired_timeout)
 
     if deleted_records_count > 0 do
