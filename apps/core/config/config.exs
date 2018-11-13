@@ -46,7 +46,12 @@ config :core, :mouth,
   password: {:system, "GATEWAY_PASSWORD", "password"},
   host: {:system, "TWILIO_HOST", "https://api.twilio.com"},
   account_sid: {:system, "TWILIO_ACCOUNT_SID", "test"},
-  auth_token: {:system, "TWILIO_AUTH_TOKEN", "test"}
+  auth_token: {:system, "TWILIO_AUTH_TOKEN", "test"},
+  hackney_options: [
+    connect_timeout: {:system, :integer, "HACKNEY_REQUEST_TIMEOUT", 20_000},
+    recv_timeout: {:system, :integer, "HACKNEY_REQUEST_TIMEOUT", 20_000},
+    timeout: {:system, :integer, "HACKNEY_REQUEST_TIMEOUT", 20_000}
+  ]
 
 # General application configuration
 # Configures Elixir's Logger
