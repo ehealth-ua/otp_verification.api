@@ -62,7 +62,7 @@ defmodule Core.MixProject do
       {:hackney, "~> 1.13", override: true},
       {:httpoison, "~> 1.1.0"},
       {:jvalid, "~> 0.6.0"},
-      {:mouth, "~> 0.4.0"},
+      {:mouth, git: "https://github.com/Nebo15/mouth.git", branch: "master"},
       {:ecto_logger_json, git: "https://github.com/edenlabllc/ecto_logger_json.git", branch: "query_params"},
       {:timex, "~> 3.2"},
       {:redix, "~> 0.7.1"},
