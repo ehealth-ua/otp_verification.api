@@ -41,8 +41,11 @@ defmodule Core.SMSLogs do
   end
 
   def status_check_job do
+    :ets.new(:sms_counter, [:public, :named_table])
+    :ets.insert(:sms_counter, {"count", 0})
     sms_expiration = Confex.fetch_env!(:core, :sms_statuses_expiration)
     sms_collection = find_sms_for_status_check(sms_expiration)
+    Logger.info(fn -> "#{length(sms_collection)} sms collected" end)
     collect_status_updates(sms_collection)
   end
 
@@ -56,6 +59,8 @@ defmodule Core.SMSLogs do
   defp collect_status_updates(sms_collection) do
     sms_collect_timeout = Confex.fetch_env!(:core, :sms_collect_timeout)
     Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, [], timeout: sms_collect_timeout))
+    [{_, count}] = :ets.lookup(:sms_counter, "count")
+    Logger.info(fn -> "#{count} sms updated" end)
   end
 
   def update_sms_status(sms) do
@@ -69,22 +74,34 @@ defmodule Core.SMSLogs do
   end
 
   def do_update_sms_status(sms, status, datetime) do
-    sms_update_timeout = Confex.fetch_env!(:core, :sms_update_timeout)
+    case Timex.parse(datetime, "{RFC1123}") do
+      {:ok, datetime} ->
+        sms_update_timeout = Confex.fetch_env!(:core, :sms_update_timeout)
 
-    should_update_sms_status =
-      DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -sms_update_timeout)) in [:lt, :eq]
+        should_update_sms_status =
+          DateTime.compare(sms.inserted_at, Timex.shift(Timex.now(), minutes: -sms_update_timeout)) in [:lt, :eq]
 
-    update_query = change(sms, gateway_status: status)
+        update_query = change(sms, gateway_status: status)
 
-    update_query =
-      if should_update_sms_status,
-        do: put_change(update_query, :gateway_status, SMSLog.status(:terminated)),
-        else: update_query
+        update_query =
+          if should_update_sms_status,
+            do: put_change(update_query, :gateway_status, SMSLog.status(:terminated)),
+            else: update_query
 
-    if get_change(update_query, :gateway_status) do
-      update_query
-      |> put_change(:status_changed_at, Timezone.convert(Timex.parse!(datetime, "{RFC1123}"), "UTC"))
-      |> Repo.update()
+        result =
+          if get_change(update_query, :gateway_status) do
+            update_query
+            |> put_change(:status_changed_at, Timezone.convert(datetime, "UTC"))
+            |> Repo.update()
+          else
+            nil
+          end
+
+        :ets.update_counter(:sms_counter, "count", 1)
+        result
+
+      {:error, _} ->
+        Logger.error("Error parsing provider datetime: #{datetime} (sms id #{sms.id})")
     end
   end
 end

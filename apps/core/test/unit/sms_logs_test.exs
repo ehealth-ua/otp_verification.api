@@ -1,6 +1,13 @@
 defmodule Core.SMSLogTest do
   use Core.DataCase
+  import ExUnit.CaptureLog
   alias Core.SMSLogs
+
+  setup do
+    :ets.new(:sms_counter, [:public, :named_table])
+    :ets.insert(:sms_counter, {"count", 0})
+    :ok
+  end
 
   test "changeset is updated" do
     sms = insert(:sms_logs, gateway_status: "Enroute")
@@ -25,5 +32,12 @@ defmodule Core.SMSLogTest do
     sms = insert(:sms_logs, gateway_status: "Enroute")
     {:ok, updates_sms} = SMSLogs.do_update_sms_status(sms, "Accepted", Timex.format!(Timex.now(), "{RFC1123}"))
     refute updates_sms.gateway_status == "Terminated"
+  end
+
+  test "sms datetime is invalid" do
+    sms = insert(:sms_logs, gateway_status: "Enroute")
+
+    assert capture_log(fn -> SMSLogs.do_update_sms_status(sms, "Accepted", "test") end) =~
+             "Error parsing provider datetime"
   end
 end
