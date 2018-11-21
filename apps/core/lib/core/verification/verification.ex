@@ -12,7 +12,8 @@ defmodule Core.Verification.Verification do
     field(:code_expired_at, :utc_datetime)
     field(:active, :boolean, default: true)
     field(:attempts_count, :integer, default: 0)
-    timestamps(type: :utc_datetime, updated_at: false)
+
+    timestamps(updated_at: false)
   end
 
   # verification statuses

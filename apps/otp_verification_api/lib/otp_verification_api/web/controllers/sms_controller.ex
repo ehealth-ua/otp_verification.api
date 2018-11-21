@@ -1,8 +1,9 @@
 defmodule OtpVerification.Web.SMSController do
   @moduledoc false
+
   use OtpVerification.Web, :controller
-  alias Core.SMSLogs
   alias Core.SMSLog.Schema, as: SMSLog
+  alias Core.SMSLogs
 
   action_fallback(OtpVerification.Web.FallbackController)
 

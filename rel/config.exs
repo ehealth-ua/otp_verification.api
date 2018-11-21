@@ -31,44 +31,12 @@ release :otp_verification_api do
   )
 end
 
-release :sms_status_updater do
-  set(version: current_version(:sms_status_updater))
+release :scheduler do
+  set(version: current_version(:scheduler))
 
   set(
     applications: [
-      sms_status_updater: :permanent
-    ]
-  )
-
-  set(
-    config_providers: [
-      {Toml.Provider, [path: "/app/config.toml"]}
-    ]
-  )
-end
-
-release :deactivator do
-  set(version: current_version(:deactivator))
-
-  set(
-    applications: [
-      deactivator: :permanent
-    ]
-  )
-
-  set(
-    config_providers: [
-      {Toml.Provider, [path: "/app/config.toml"]}
-    ]
-  )
-end
-
-release :terminator do
-  set(version: current_version(:terminator))
-
-  set(
-    applications: [
-      terminator: :permanent
+      scheduler: :permanent
     ]
   )
 

@@ -4,6 +4,7 @@ defmodule Core.Verification.VerifiedPhone do
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "verified_phones" do
     field(:phone_number, :string)
-    timestamps(type: :utc_datetime, inserted_at: false)
+
+    timestamps(inserted_at: false)
   end
 end

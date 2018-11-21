@@ -11,7 +11,8 @@ defmodule Core.SMSLog.Schema do
     field(:gateway_status, :string)
     field(:status_changed_at, :utc_datetime)
     field(:type, :string, null: false)
-    timestamps(type: :utc_datetime, updated_at: false)
+
+    timestamps(updated_at: false)
   end
 
   @gateway_status_accepted "Accepted"

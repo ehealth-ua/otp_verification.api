@@ -11,7 +11,7 @@ defmodule Core.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.6",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       build_embedded: Mix.env() == :prod,
@@ -71,8 +71,7 @@ defmodule Core.MixProject do
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.8.1", only: [:dev, :test]},
       {:mox, "~> 0.4", only: [:test]},
-      {:ex_machina, "~> 2.2", only: [:dev, :test]},
-      {:credo, "~> 0.9.3", only: [:dev, :test]}
+      {:ex_machina, "~> 2.2", only: [:dev, :test]}
     ]
   end
 

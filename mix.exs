@@ -17,7 +17,7 @@ defmodule OtpVerification.MixProject do
     [
       {:distillery, "~> 2.0", runtime: false},
       {:excoveralls, "~> 0.8.1", only: [:dev, :test]},
-      {:credo, "~> 0.9.3", only: [:dev, :test]}
+      {:credo, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end

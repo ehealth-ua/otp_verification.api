@@ -14,9 +14,9 @@ addons:
     packages:
       - docker-ce
 elixir:
-  - 1.6.6
+  - 1.7.4
 otp_release:
-  - 20.3.8
+  - 21.1.1
 notifications:
   slack:
     rooms:
@@ -54,19 +54,7 @@ jobs:
       - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
       - (curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella_v2/docker.sh -o docker.sh; bash ./docker.sh) || travis_terminate 1
     - stage: "test and build"
-      env: APPS='[{"app":"sms_status_updater","chart":"verification","namespace":"verification","job":"true"}]'
-      # "Decrypting deploy key..."
-      script:
-      - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
-      - (curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella_v2/docker.sh -o docker.sh; bash ./docker.sh) || travis_terminate 1
-    - stage: "test and build"
-      env: APPS='[{"app":"deactivator","chart":"verification","namespace":"verification","job":"true"}]'
-      # "Decrypting deploy key..."
-      script:
-      - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d
-      - (curl -s https://raw.githubusercontent.com/edenlabllc/ci-utils/umbrella_v2/docker.sh -o docker.sh; bash ./docker.sh) || travis_terminate 1
-    - stage: "test and build"
-      env: APPS='[{"app":"terminator","chart":"verification","namespace":"verification","job":"true"}]'
+      env: APPS='[{"app":"scheduler","chart":"verification","namespace":"verification"}]'
       # "Decrypting deploy key..."
       script:
       - openssl aes-256-cbc -K $encrypted_6a0dda48e28c_key -iv $encrypted_6a0dda48e28c_iv -in eHealth-8110bd102a69.json.enc -out eHealth-8110bd102a69.json -d

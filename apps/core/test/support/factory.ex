@@ -30,7 +30,7 @@ defmodule Core.Factory do
       body: "test",
       gateway_id: "gateway_id",
       gateway_status: "Accepted",
-      inserted_at: Timex.now(),
+      inserted_at: DateTime.utc_now(),
       type: ""
     }
   end
