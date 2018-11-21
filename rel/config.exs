@@ -31,12 +31,12 @@ release :otp_verification_api do
   )
 end
 
-release :scheduler do
-  set(version: current_version(:scheduler))
+release :otp_verification_scheduler do
+  set(version: current_version(:otp_verification_scheduler))
 
   set(
     applications: [
-      scheduler: :permanent
+      otp_verification_scheduler: :permanent
     ]
   )
 

@@ -1,7 +1,7 @@
 defmodule Scheduler.Jobs.SmsStatusUpdater do
   @moduledoc false
 
-  use Confex, otp_app: :scheduler
+  use Confex, otp_app: :otp_verification_scheduler
   use Timex
   require Logger
   import Ecto.Changeset

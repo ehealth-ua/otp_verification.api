@@ -1,7 +1,7 @@
 defmodule Scheduler.Worker do
   @moduledoc false
 
-  use Quantum.Scheduler, otp_app: :scheduler
+  use Quantum.Scheduler, otp_app: :otp_verification_scheduler
 
   alias Crontab.CronExpression.Parser
   alias Quantum.Job
@@ -17,7 +17,7 @@ defmodule Scheduler.Worker do
   end
 
   defp create_job(fun, config_name) do
-    config = Confex.fetch_env!(:scheduler, __MODULE__)
+    config = Confex.fetch_env!(:otp_verification_scheduler, __MODULE__)
 
     __MODULE__.new_job()
     |> Job.set_overlap(false)

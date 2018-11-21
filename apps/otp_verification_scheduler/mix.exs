@@ -3,7 +3,7 @@ defmodule Scheduler.MixProject do
 
   def project do
     [
-      app: :scheduler,
+      app: :otp_verification_scheduler,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
