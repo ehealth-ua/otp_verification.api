@@ -53,7 +53,7 @@ defmodule Core.MixProject do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:toml, "~> 0.3.0"},
+      {:confex_config_provider, "~> 0.1.0"},
       {:confex, "~> 3.3"},
       {:poison, "~> 3.1"},
       {:ecto, "~> 2.1"},

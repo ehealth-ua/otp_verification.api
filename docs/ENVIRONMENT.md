@@ -33,3 +33,4 @@ Also sample `.env` can be used as payload for `docker run` cli.
 | ------------- | ------------- | ----------- |
 | OTP_CODE_LENGTH | `6` | Length of generated OTP code using Lunh's algorithm |
 | CODE_EXPIRATION_PERIOD_MINUTES | `15` | Code expiration in minutes |
+| HACKNEY_REQUEST_TIMEOUT | `20000` | SMS adapter request timeout

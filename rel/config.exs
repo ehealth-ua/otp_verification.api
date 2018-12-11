@@ -24,11 +24,7 @@ release :otp_verification_api do
     ]
   )
 
-  set(
-    config_providers: [
-      {Toml.Provider, [path: "/app/config.toml"]}
-    ]
-  )
+  set(config_providers: [ConfexConfigProvider])
 end
 
 release :otp_verification_scheduler do
@@ -40,9 +36,5 @@ release :otp_verification_scheduler do
     ]
   )
 
-  set(
-    config_providers: [
-      {Toml.Provider, [path: "/app/config.toml"]}
-    ]
-  )
+  set(config_providers: [ConfexConfigProvider])
 end
