@@ -203,7 +203,11 @@ defmodule Core.Verification.Verifications do
     attrs =
       if attempts_count < max_attempts,
         do: %{attempts_count: attempts_count},
-        else: %{status: Verification.status(:unverified), active: false, attempts_count: attempts_count}
+        else: %{
+          status: Verification.status(:unverified),
+          active: false,
+          attempts_count: attempts_count
+        }
 
     verification
     |> update_verification(attrs)
@@ -250,7 +254,15 @@ defmodule Core.Verification.Verifications do
   @spec verification_changeset(verification :: Verification.t(), %{}) :: Ecto.Changeset.t()
   defp verification_changeset(%Verification{} = verification, attrs) do
     verification
-    |> cast(attrs, [:phone_number, :check_digit, :status, :code, :code_expired_at, :active, :attempts_count])
+    |> cast(attrs, [
+      :phone_number,
+      :check_digit,
+      :status,
+      :code,
+      :code_expired_at,
+      :active,
+      :attempts_count
+    ])
     |> validate_required([:phone_number, :check_digit, :status, :code, :code_expired_at])
     |> validate_inclusion(:status, Verification.status_options())
     |> PhoneNumber.validate_phone_number(:phone_number)
@@ -291,8 +303,9 @@ defmodule Core.Verification.Verifications do
   end
 
   @spec get_code_expiration_time :: String.t()
-  defp get_code_expiration_time,
-    do: DateTime.to_iso8601(Timex.shift(Timex.now(), minutes: Confex.fetch_env!(:core, :code_expiration_period)))
+  defp get_code_expiration_time do
+    DateTime.to_iso8601(Timex.shift(Timex.now(), minutes: Confex.fetch_env!(:core, :code_expiration_period)))
+  end
 
   @spec deactivate_verifications(phone_number :: Integer.t()) :: {integer, nil | [term]} | no_return
   defp deactivate_verifications(phone_number) do

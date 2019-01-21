@@ -6,7 +6,15 @@ defmodule Scheduler.Jobs.Deactivator do
 
   def run do
     {canceled_records_count, _} = Verifications.cancel_expired_verifications()
-    Logger.info(fn -> "Just cleaned #{canceled_records_count} expired verifications" end)
+
+    Logger.info(fn ->
+      Poison.encode!(%{
+        "log_type" => "scheduler",
+        "action" => "run",
+        "body" => "Just cleaned #{canceled_records_count} expired verifications"
+      })
+    end)
+
     {:ok, canceled_records_count}
   end
 end
