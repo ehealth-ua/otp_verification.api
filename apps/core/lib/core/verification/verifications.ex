@@ -145,13 +145,6 @@ defmodule Core.Verification.Verifications do
           "body" => sms_text,
           "type" => "verification"
         })
-
-      Map.merge(attrs, %{
-        "check_digit" => checksum,
-        "code" => otp_code,
-        "status" => Verification.status(:new),
-        "code_expired_at" => code_expired_at
-      })
     rescue
       e in Mouth.ApiError ->
         Logger.error(fn ->
@@ -162,9 +155,14 @@ defmodule Core.Verification.Verifications do
             "body" => e.message
           })
         end)
-
-        {:error, :service_unavailable}
     end
+
+    Map.merge(attrs, %{
+      "check_digit" => checksum,
+      "code" => otp_code,
+      "status" => Verification.status(:new),
+      "code_expired_at" => code_expired_at
+    })
   end
 
   @spec verify(verification :: %{code: Integer.t()}, code :: Integer.t()) :: tuple()

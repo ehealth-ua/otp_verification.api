@@ -187,7 +187,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       Application.put_env(:core, :code_length, 0)
       Application.put_env(:core, :code_text, "exception")
       conn = post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
-      assert json_response(conn, 503)
+      assert json_response(conn, 422)
     end
   end
 end
