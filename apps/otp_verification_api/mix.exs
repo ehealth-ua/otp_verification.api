@@ -7,7 +7,7 @@ defmodule OtpVerificationAPI.MixProject do
     [
       app: :otp_verification_api,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.8.1",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
@@ -58,7 +58,8 @@ defmodule OtpVerificationAPI.MixProject do
       {:eview, "~> 0.12.4"},
       {:phoenix_ecto, "~> 3.2"},
       {:plug_logger_json, "~> 0.5"},
-      {:ecto_logger_json, git: "https://github.com/edenlabllc/ecto_logger_json.git", branch: "query_params"},
+      {:ecto_logger_json,
+       git: "https://github.com/edenlabllc/ecto_logger_json.git", branch: "query_params"},
       {:excoveralls, "~> 0.8.1", only: [:dev, :test]},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
       {:core, in_umbrella: true}
