@@ -3,6 +3,11 @@ use Mix.Config
 # Configuration for test environment
 config :ex_unit, capture_log: true
 
+config :core,
+  # Run acceptance test in concurrent mode
+  sql_sandbox: true,
+  api_resolvers: [sms_sender: SMSLogsMock]
+
 # Configure your database
 config :core, Core.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -18,8 +23,5 @@ config :core, Core.Repo,
 
 # Print only warnings and errors during test
 config :logger, level: :debug
-
-# Run acceptance test in concurrent mode
-config :core, sql_sandbox: true
 
 config :core, :mouth, adapter: Mouth.TestAdapter

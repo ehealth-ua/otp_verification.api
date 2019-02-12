@@ -3,15 +3,19 @@ defmodule Core.VerificationsTest do
 
   use Core.DataCase
   import Core.Factory
+  import Mox
   alias Core.Redix
   alias Core.Verification.Verification
   alias Core.Verification.Verifications
   alias Core.Verification.VerifiedPhone
+  alias Mouth.Messenger
 
   setup do
     Redix.command(["FLUSHALL"])
     :ok
   end
+
+  setup :verify_on_exit!
 
   @create_attrs %{
     check_digit: 42,
@@ -34,42 +38,10 @@ defmodule Core.VerificationsTest do
     status: nil
   }
 
-  describe "Verifications CRUD" do
-    test "list_verifications/1 returns all verifications" do
-      verification = insert(:verification, @create_attrs)
-      assert Verifications.list_verifications() == [verification]
-    end
-
-    test "get_verifications! returns the verifications with given id" do
-      verification = insert(:verification, @create_attrs)
-      assert Verifications.get_verification!(verification.id) == verification
-    end
-
+  describe "Verifications CRUD no deliver" do
     test "get_verifications returns the verifications with given id" do
       verification = insert(:verification, @create_attrs)
       assert Verifications.get_verification(verification.id) == verification
-    end
-
-    test "get_verifications_by return the verifications struct" do
-      verification = insert(:verification, @create_attrs)
-      new_verification = Verifications.get_verification_by(phone_number: verification.phone_number)
-      assert new_verification == verification
-    end
-
-    test "create_verifications/1 with valid data creates a verifications" do
-      assert {:ok, %Verification{} = verification} = Verifications.create_verification(@create_attrs)
-      assert verification.check_digit == 42
-      assert verification.code == 42
-      assert verification.phone_number == "+380631112233"
-      assert verification.status == Verification.status(:new)
-    end
-
-    test "create_verifications fails to create without attributes" do
-      {:error, %Ecto.Changeset{}} = Verifications.create_verification(%{})
-    end
-
-    test "create_verifications/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Verifications.create_verification(@invalid_attrs)
     end
 
     test "update_verifications/2 with valid data updates the verifications" do
@@ -82,10 +54,73 @@ defmodule Core.VerificationsTest do
       assert verification.status == Verification.status(:completed)
     end
 
+    test "list_verifications/1 returns all verifications" do
+      verification = insert(:verification, @create_attrs)
+      assert Verifications.list_verifications() == [verification]
+    end
+
+    test "get_verifications! returns the verifications with given id" do
+      verification = insert(:verification, @create_attrs)
+      assert Verifications.get_verification!(verification.id) == verification
+    end
+
+    test "create_verifications/1 with valid data creates a verifications" do
+      assert {:ok, %Verification{} = verification} = Verifications.create_verification(@create_attrs)
+      assert verification.check_digit == 42
+      assert verification.code == 42
+      assert verification.phone_number == "+380631112233"
+      assert verification.status == Verification.status(:new)
+    end
+
     test "update_verifications/2 with invalid data returns error changeset" do
       verification = insert(:verification, @create_attrs)
       assert {:error, %Ecto.Changeset{}} = Verifications.update_verification(verification, @invalid_attrs)
       assert verification == Verifications.get_verification!(verification.id)
+    end
+
+    test "create_verifications/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Verifications.create_verification(@invalid_attrs)
+    end
+
+    test "cancel expired verifications" do
+      verification = insert(:verification, @create_attrs)
+      Verifications.cancel_expired_verifications()
+      verification = Repo.get(Verification, verification.id)
+      refute verification.active
+      assert verification.status == Verification.status(:expired)
+    end
+
+    test "create_verifications fails to create without attributes" do
+      {:error, %Ecto.Changeset{}} = Verifications.create_verification(%{})
+    end
+
+    test "delete_verification" do
+      verification = insert(:verification, @create_attrs)
+      params = %{@create_attrs | phone_number: "+380631112234"}
+      new_verification = insert(:verification, params)
+      list = Verifications.list_verifications()
+      assert verification in list
+      assert new_verification in list
+
+      {:ok, _} = Verifications.delete_verification(verification)
+      refute verification in Verifications.list_verifications()
+      assert new_verification in Verifications.list_verifications()
+    end
+
+    test "get_verifications_by return the verifications struct" do
+      verification = insert(:verification, @create_attrs)
+      new_verification = Verifications.get_verification_by(phone_number: verification.phone_number)
+      assert new_verification == verification
+    end
+  end
+
+  describe "Verifications CRUD" do
+    setup do
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
+      :ok
     end
 
     test "initialize verification" do
@@ -96,6 +131,10 @@ defmodule Core.VerificationsTest do
     end
 
     test "too many requests" do
+      stub(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       System.put_env("INIT_VERIFICATION_LIMIT", "5")
       assert {:ok, %Verification{}} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
       assert {:error, :too_many_requests} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
@@ -113,6 +152,10 @@ defmodule Core.VerificationsTest do
     end
 
     test "complete verification" do
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       {:ok, %Verification{} = verification} =
         Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
 
@@ -123,27 +166,6 @@ defmodule Core.VerificationsTest do
         Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
 
       {:ok, %Verification{}, :not_verified} = Verifications.verify(verification, 123)
-    end
-
-    test "delete_verification" do
-      verification = insert(:verification, @create_attrs)
-      params = %{@create_attrs | phone_number: "+380631112234"}
-      new_verification = insert(:verification, params)
-      list = Verifications.list_verifications()
-      assert verification in list
-      assert new_verification in list
-
-      {:ok, _} = Verifications.delete_verification(verification)
-      refute verification in Verifications.list_verifications()
-      assert new_verification in Verifications.list_verifications()
-    end
-
-    test "cancel expired verifications" do
-      verification = insert(:verification, @create_attrs)
-      Verifications.cancel_expired_verifications()
-      verification = Repo.get(Verification, verification.id)
-      refute verification.active
-      assert verification.status == Verification.status(:expired)
     end
   end
 

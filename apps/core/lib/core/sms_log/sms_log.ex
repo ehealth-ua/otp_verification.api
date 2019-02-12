@@ -11,6 +11,7 @@ defmodule Core.SMSLog.Schema do
     field(:gateway_status, :string)
     field(:status_changed_at, :utc_datetime)
     field(:type, :string, null: false)
+    field(:provider, :string)
 
     timestamps(updated_at: false)
   end

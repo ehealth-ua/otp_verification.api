@@ -1,11 +1,15 @@
 defmodule OtpVerification.Web.VerificationsControllerTest do
   use OtpVerification.Web.ConnCase
+  import Mox
 
   alias Core.Redix
   alias Core.Verification.Verification
   alias Core.Verification.Verifications
   alias Core.Verification.VerifiedPhone
+  alias Mouth.Messenger
   alias OtpVerification.Web.Endpoint
+
+  setup :verify_on_exit!
 
   @create_attrs %{
     check_digit: 42,
@@ -33,6 +37,10 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   describe "POST /verifications" do
     test "initialize verification", %{conn: conn} do
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       conn = post(conn, "/verifications", %{phone_number: "+380631112233"})
       status = Verification.status(:new)
 
@@ -45,6 +53,11 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
     test "initialize verification too many requests", %{conn: conn} do
       System.put_env("INIT_VERIFICATION_LIMIT", "5")
+
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       conn = post(conn, "/verifications", %{phone_number: "+380631112230"})
       status = Verification.status(:new)
 
@@ -60,6 +73,10 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
 
     test "creating new verification with same number deactivates older ones", %{conn: conn} do
+      expect(SMSLogsMock, :deliver, 2, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       res = post(conn, "/verifications", %{phone_number: "+380631112233"})
       %{"id" => id, "active" => true} = json_response(res, 201)["data"]
 
@@ -69,7 +86,9 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       refute id == new_id
       refute Verifications.get_verification(id).active
     end
+  end
 
+  describe "initialize verification too many requests bad params" do
     test "initialize verification bad params", %{conn: conn} do
       conn1 = post(conn, "/verifications", %{})
       assert json_response(conn1, 422)
@@ -85,15 +104,30 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
   end
 
-  describe "PATCH /verifications" do
+  describe "PATCH /verifications invalid phone number" do
     test "complete with invalid phone number", %{conn: conn} do
       conn = patch(conn, "/verifications/123456/actions/complete", %{code: 12345})
       assert json_response(conn, 404)
     end
+  end
+
+  describe "PATCH /verifications" do
+    setup do
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
+      :ok
+    end
 
     test "complete verification", %{conn: conn} do
       verification = initialize_verification()
-      conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
+
+      conn =
+        patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{
+          code: verification.code
+        })
+
       status = Verification.status(:verified)
       assert %{"status" => ^status} = json_response(conn, 200)["data"]
       assert length(Repo.all(VerifiedPhone)) == 1
@@ -102,7 +136,9 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     test "failed verification", %{conn: conn} do
       verification = initialize_verification()
 
-      conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
+      conn =
+        patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
+
       assert %{"error" => %{"message" => "Invalid verification code"}} = json_response(conn, 403)
     end
 
@@ -110,7 +146,12 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       default_expiration = Confex.fetch_env!(:core, :code_expiration_period)
       System.put_env("CODE_EXPIRATION_PERIOD_MINUTES", "0")
       verification = initialize_verification()
-      conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
+
+      conn =
+        patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{
+          code: verification.code
+        })
+
       assert %{"error" => %{"message" => "Verification code expired"}} = json_response(conn, 403)
       System.put_env("CODE_EXPIRATION_PERIOD_MINUTES", to_string(default_expiration))
     end
@@ -121,21 +162,13 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
       patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
       patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
-      conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
+
+      conn =
+        patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{
+          code: verification.code
+        })
+
       assert %{"error" => %{"message" => "Maximum attempts exceed"}} = json_response(conn, 403)
-    end
-
-    test "get proper verification response when creates many verifications for same number", %{conn: conn} do
-      post(conn, "/verifications", %{phone_number: "+380631112233"})
-      post(conn, "/verifications", %{phone_number: "+380631112233"})
-      post(conn, "/verifications", %{phone_number: "+380631112233"})
-      res = post(conn, "/verifications", %{phone_number: "+380631112233"})
-      %{"id" => id} = json_response(res, 201)["data"]
-
-      code = Verifications.get_verification(id).code
-
-      res2 = patch(conn, "/verifications/+380631112233/actions/complete", %{code: code})
-      assert json_response(res2, 200)
     end
 
     test "json schema works", %{conn: conn} do
@@ -147,10 +180,38 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
   end
 
+  describe "PATCH /verifications for same number" do
+    test "get proper verification response when creates many verifications for same number", %{
+      conn: conn
+    } do
+      expect(SMSLogsMock, :deliver, 4, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
+      post(conn, "/verifications", %{phone_number: "+380631112233"})
+      post(conn, "/verifications", %{phone_number: "+380631112233"})
+      post(conn, "/verifications", %{phone_number: "+380631112233"})
+      res = post(conn, "/verifications", %{phone_number: "+380631112233"})
+      %{"id" => id} = json_response(res, 201)["data"]
+
+      code = Verifications.get_verification(id).code
+
+      res2 = patch(conn, "/verifications/+380631112233/actions/complete", %{code: code})
+      assert json_response(res2, 200)
+    end
+  end
+
   describe "GET /verifications" do
     test "GET /verifications", %{conn: conn} do
+      expect(SMSLogsMock, :deliver, 2, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
       verification = initialize_verification()
-      patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
+
+      patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{
+        code: verification.code
+      })
 
       conn1 = get(conn, "/verifications/+380631112233")
       assert json_response(conn1, 200)
@@ -162,12 +223,17 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       assert json_response(conn3, 404)
 
       new_verification = initialize_verification("+380931232323")
-      patch(conn, "/verifications/#{new_verification.phone_number}/actions/complete", %{code: new_verification.code})
+
+      patch(conn, "/verifications/#{new_verification.phone_number}/actions/complete", %{
+        code: new_verification.code
+      })
 
       conn1 = get(conn, "/verifications/+380931232323")
       assert json_response(conn1, 200)
 
-      patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: verification.code})
+      patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{
+        code: verification.code
+      })
 
       conn1 = get(conn, "/verifications/+380631112233")
       assert json_response(conn1, 200)
@@ -175,6 +241,14 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
   end
 
   describe "testing errors callback" do
+    setup do
+      expect(SMSLogsMock, :deliver, fn message, config ->
+        Messenger.deliver(message, config)
+      end)
+
+      :ok
+    end
+
     test "service unavailable error test", %{conn: conn} do
       current_code_length = Application.get_env(:core, :code_length)
       current_code_text = Application.get_env(:core, :code_text)
@@ -186,7 +260,10 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
       Application.put_env(:core, :code_length, 0)
       Application.put_env(:core, :code_text, "exception")
-      conn = post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
+
+      conn =
+        post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
+
       assert json_response(conn, 422)
     end
   end
