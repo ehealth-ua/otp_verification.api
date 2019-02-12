@@ -44,7 +44,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
 
   defp find_sms_for_status_check(minutes) do
     SMSLog
-    |> where([sms], sms.inserted_at > ^DateTime.to_naive(Timex.shift(Timex.now(), minutes: -minutes)))
+    |> where([sms], sms.inserted_at > ^DateTime.to_naive(DateTime.add(DateTime.utc_now(), -minutes * 60, :second)))
     |> where([sms], sms.gateway_status in ^[SMSLog.status(:accepted), SMSLog.status(:enroute), SMSLog.status(:unknown)])
     |> Repo.all()
   end
@@ -63,8 +63,8 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
     case Timex.parse(datetime, "{RFC1123}") do
       {:ok, datetime} ->
         sms_update_timeout =
-          Timex.now()
-          |> Timex.shift(minutes: -config()[:sms_update_timeout])
+          DateTime.utc_now()
+          |> DateTime.add(-config()[:sms_update_timeout] * 60, :second)
           |> DateTime.to_naive()
 
         should_update_sms_status = NaiveDateTime.compare(sms.inserted_at, sms_update_timeout) in ~w(lt eq)a

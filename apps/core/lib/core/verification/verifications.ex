@@ -177,7 +177,7 @@ defmodule Core.Verification.Verifications do
   end
 
   defp verify_expiration_time(%Verification{} = verification) do
-    if Timex.before?(Timex.now(), verification.code_expired_at),
+    if :lt == DateTime.compare(DateTime.utc_now(), verification.code_expired_at),
       do: :ok,
       else: verification_does_not_completed(verification, :expired)
   end
@@ -302,7 +302,9 @@ defmodule Core.Verification.Verifications do
 
   @spec get_code_expiration_time :: String.t()
   defp get_code_expiration_time do
-    DateTime.to_iso8601(Timex.shift(Timex.now(), minutes: Confex.fetch_env!(:core, :code_expiration_period)))
+    DateTime.to_iso8601(
+      DateTime.add(DateTime.utc_now(), Confex.fetch_env!(:core, :code_expiration_period) * 60, :second)
+    )
   end
 
   @spec deactivate_verifications(phone_number :: Integer.t()) :: {integer, nil | [term]} | no_return
@@ -323,7 +325,7 @@ defmodule Core.Verification.Verifications do
   def cancel_expired_verifications do
     Verification
     |> where(active: true)
-    |> where([v], v.code_expired_at < ^Timex.now())
+    |> where([v], v.code_expired_at < ^DateTime.utc_now())
     |> Repo.update_all(set: [active: false, status: Verification.status(:expired)])
   end
 end

@@ -10,8 +10,16 @@ defmodule Scheduler.Jobs.TerminatorTest do
     current_value = System.get_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS")
     System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", "2")
 
-    verification_in = insert(:verification, %{inserted_at: DateTime.to_naive(Timex.shift(Timex.now(), days: -1))})
-    verification_out = insert(:verification, %{inserted_at: DateTime.to_naive(Timex.shift(Timex.now(), days: -3))})
+    verification_in =
+      insert(:verification, %{
+        inserted_at: DateTime.to_naive(DateTime.add(DateTime.utc_now(), -1 * 24 * 60 * 60, :second))
+      })
+
+    verification_out =
+      insert(:verification, %{
+        inserted_at: DateTime.to_naive(DateTime.add(DateTime.utc_now(), -3 * 24 * 60 * 60, :second))
+      })
+
     assert {:ok, 1} == Terminator.run()
 
     verification_ids =
@@ -31,8 +39,8 @@ defmodule Scheduler.Jobs.TerminatorTest do
     current_value = System.get_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS")
     System.put_env("VALIDATIONS_EXPIRATION_PERIOD_DAYS", "")
 
-    insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -1)})
-    insert(:verification, %{inserted_at: Timex.shift(Timex.now(), days: -3)})
+    insert(:verification, %{inserted_at: DateTime.add(DateTime.utc_now(), -1 * 24 * 60 * 60, :second)})
+    insert(:verification, %{inserted_at: DateTime.add(DateTime.utc_now(), -3 * 24 * 60 * 60, :second)})
     assert {:ok, 0} == Terminator.run()
 
     assert length(Verifications.list_verifications()) == 2

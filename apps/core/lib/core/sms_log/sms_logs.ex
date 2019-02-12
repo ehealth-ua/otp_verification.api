@@ -2,7 +2,6 @@ defmodule Core.SMSLogs do
   @moduledoc false
 
   use Confex, otp_app: :core
-  use Timex
   require Logger
   import Ecto.Changeset
   import Mouth.Message

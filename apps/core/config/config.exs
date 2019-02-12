@@ -23,6 +23,9 @@ use Mix.Config
 # Or read environment variables in runtime (!) as:
 #
 #     :var_name, "${ENV_VAR_NAME}"
+
+config :phoenix, :json_library, Jason
+
 config :core,
   namespace: Core,
   ecto_repos: [Core.Repo],

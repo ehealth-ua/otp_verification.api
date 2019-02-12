@@ -58,20 +58,22 @@ defmodule Core.MixProject do
       {:poison, "~> 3.1"},
       {:ecto, "~> 2.1"},
       {:postgrex, ">= 0.0.0"},
-      {:cowboy, "~> 1.1"},
+      {:plug_cowboy, "~> 2.0"},
+      {:plug, "~> 1.7"},
       {:hackney, "~> 1.13", override: true},
       {:httpoison, "~> 1.1.0"},
       {:jvalid, "~> 0.6.0"},
       {:mouth, git: "https://github.com/Nebo15/mouth.git", branch: "master"},
       {:ecto_logger_json, git: "https://github.com/edenlabllc/ecto_logger_json.git", branch: "query_params"},
-      {:timex, "~> 3.2"},
+      {:timex, "~> 3.5.0"},
       {:redix, "~> 0.7.1"},
-      {:phoenix, "~> 1.3.3"},
-      {:eview, "~> 0.12.4"},
+      {:phoenix, "~> 1.4.0"},
+      {:eview, "~> 0.15.0"},
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.8.1", only: [:dev, :test]},
       {:mox, "~> 0.4", only: [:test]},
-      {:ex_machina, "~> 2.2", only: [:dev, :test]}
+      {:ex_machina, "~> 2.2", only: [:dev, :test]},
+      {:jason, "~> 1.0"}
     ]
   end
 

@@ -24,8 +24,8 @@ defmodule Scheduler.Jobs.Terminator do
 
   defp delete_expired_verifications(expired_timeout) when is_number(expired_timeout) and expired_timeout > 0 do
     expired_moment =
-      Timex.now()
-      |> Timex.shift(days: -expired_timeout)
+      DateTime.utc_now()
+      |> DateTime.add(-expired_timeout * 24 * 60 * 60, :second)
       |> DateTime.to_naive()
 
     Verification

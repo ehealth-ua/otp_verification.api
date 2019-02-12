@@ -16,7 +16,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdaterTest do
       sms = insert(:sms_logs, gateway_status: "Enroute")
 
       {:ok, updates_sms} =
-        SmsStatusUpdater.do_update_sms_status(sms, "Delivered", Timex.format!(Timex.now(), "{RFC1123}"))
+        SmsStatusUpdater.do_update_sms_status(sms, "Delivered", Timex.format!(DateTime.utc_now(), "{RFC1123}"))
 
       refute is_nil(updates_sms)
       assert updates_sms.gateway_status == "Delivered"
@@ -25,14 +25,18 @@ defmodule Scheduler.Jobs.SmsStatusUpdaterTest do
 
     test "changeset is not updated" do
       sms = insert(:sms_logs, gateway_status: "Enroute")
-      assert is_nil(SmsStatusUpdater.do_update_sms_status(sms, "Enroute", Timex.format!(Timex.now(), "{RFC1123}")))
+
+      assert is_nil(
+               SmsStatusUpdater.do_update_sms_status(sms, "Enroute", Timex.format!(DateTime.utc_now(), "{RFC1123}"))
+             )
     end
 
     test "sms status is updated to Terminated" do
-      sms = insert(:sms_logs, gateway_status: "Enroute", inserted_at: Timex.shift(Timex.now(), minutes: -32))
+      sms =
+        insert(:sms_logs, gateway_status: "Enroute", inserted_at: DateTime.add(DateTime.utc_now(), -32 * 60, :second))
 
       {:ok, updates_sms} =
-        SmsStatusUpdater.do_update_sms_status(sms, "Accepted", Timex.format!(Timex.now(), "{RFC1123}"))
+        SmsStatusUpdater.do_update_sms_status(sms, "Accepted", Timex.format!(DateTime.utc_now(), "{RFC1123}"))
 
       assert updates_sms.gateway_status == "Terminated"
     end
@@ -41,7 +45,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdaterTest do
       sms = insert(:sms_logs, gateway_status: "Enroute")
 
       {:ok, updates_sms} =
-        SmsStatusUpdater.do_update_sms_status(sms, "Accepted", Timex.format!(Timex.now(), "{RFC1123}"))
+        SmsStatusUpdater.do_update_sms_status(sms, "Accepted", Timex.format!(DateTime.utc_now(), "{RFC1123}"))
 
       refute updates_sms.gateway_status == "Terminated"
     end
