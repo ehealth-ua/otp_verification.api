@@ -143,7 +143,8 @@ defmodule Core.Verification.Verifications do
         SMSLogs.save_and_send_sms(%{
           "phone_number" => attrs["phone_number"],
           "body" => sms_text,
-          "type" => "verification"
+          "type" => "verification",
+          "provider" => attrs["provider"]
         })
     rescue
       e in Mouth.ApiError ->
