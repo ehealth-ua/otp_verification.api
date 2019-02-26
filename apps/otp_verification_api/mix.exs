@@ -54,10 +54,6 @@ defmodule OtpVerificationAPI.MixProject do
       {:httpoison, "~> 1.1.0"},
       {:hackney, "~> 1.13", override: true},
       {:phoenix_ecto, "~> 3.2"},
-      {:plug_logger_json, "~> 0.6.0"},
-      {:ecto_logger_json,
-       git: "https://github.com/edenlabllc/ecto_logger_json.git", branch: "query_params"},
-      {:excoveralls, "~> 0.8.1", only: [:dev, :test]},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
       {:core, in_umbrella: true}
     ]

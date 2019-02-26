@@ -22,6 +22,6 @@ config :core, Core.Repo,
 # you can enable the server option below.
 
 # Print only warnings and errors during test
-config :logger, level: :debug
+config :logger, level: :warn
 
 config :core, :mouth, adapter: Mouth.TestAdapter
