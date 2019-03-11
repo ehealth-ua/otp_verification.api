@@ -5,6 +5,6 @@ defmodule Core.Verification.VerifiedPhone do
   schema "verified_phones" do
     field(:phone_number, :string)
 
-    timestamps(inserted_at: false)
+    timestamps(type: :utc_datetime, inserted_at: false)
   end
 end

@@ -13,7 +13,7 @@ defmodule Core.Verification.Verification do
     field(:active, :boolean, default: true)
     field(:attempts_count, :integer, default: 0)
 
-    timestamps(updated_at: false)
+    timestamps(type: :utc_datetime, updated_at: false)
   end
 
   # verification statuses
