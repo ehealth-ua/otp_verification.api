@@ -13,7 +13,7 @@ defmodule Core.Repo.Migrations.CreateOtpVerification.Verification.Verifications 
       add(:gateway_id, :string)
       add(:gateway_status, :string)
       add(:attempts_count, :integer, default: 0)
-      timestamps(updated_at: false, type: :utc_datetime)
+      timestamps(updated_at: false, type: :utc_datetime_usec)
     end
   end
 end

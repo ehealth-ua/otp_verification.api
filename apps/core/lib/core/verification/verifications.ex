@@ -148,14 +148,7 @@ defmodule Core.Verification.Verifications do
         })
     rescue
       e in Mouth.ApiError ->
-        Logger.error(fn ->
-          Poison.encode!(%{
-            "log_type" => "http_request",
-            "action" => "POST",
-            "request_id" => Logger.metadata()[:request_id],
-            "body" => e.message
-          })
-        end)
+        Logger.error(to_string(e.message))
     end
 
     Map.merge(attrs, %{

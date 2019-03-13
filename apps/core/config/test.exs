@@ -10,7 +10,6 @@ config :core,
 
 # Configure your database
 config :core, Core.Repo,
-  adapter: Ecto.Adapters.Postgres,
   pool: Ecto.Adapters.SQL.Sandbox,
   username: "postgres",
   password: "postgres",

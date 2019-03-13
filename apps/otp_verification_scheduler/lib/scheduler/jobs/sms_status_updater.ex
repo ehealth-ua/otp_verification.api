@@ -14,15 +14,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
     :ets.insert(:sms_counter, {"count", 0})
     sms_expiration = config()[:sms_statuses_expiration]
     sms_collection = find_sms_for_status_check(sms_expiration)
-
-    Logger.info(fn ->
-      Poison.encode!(%{
-        "log_type" => "scheduler",
-        "action" => "run",
-        "body" => "#{length(sms_collection)} sms collected"
-      })
-    end)
-
+    Logger.info("#{length(sms_collection)} sms collected")
     collect_status_updates(sms_collection)
   end
 
@@ -30,15 +22,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
     sms_collect_timeout = config()[:sms_collect_timeout]
     Stream.run(Task.async_stream(sms_collection, __MODULE__, :update_sms_status, [], timeout: sms_collect_timeout))
     [{_, count}] = :ets.lookup(:sms_counter, "count")
-
-    Logger.info(fn ->
-      Poison.encode!(%{
-        "log_type" => "scheduler",
-        "action" => "collect_status_updates",
-        "body" => "#{count} sms updated"
-      })
-    end)
-
+    Logger.info("#{count} sms updated")
     {:ok, count}
   end
 
@@ -89,13 +73,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
         result
 
       {:error, _} ->
-        Logger.error(fn ->
-          Poison.encode!(%{
-            "log_type" => "scheduler",
-            "action" => "do_update_sms_status",
-            "body" => "Error parsing provider datetime: #{datetime} (sms id #{sms.id})"
-          })
-        end)
+        Logger.error("Error parsing provider datetime: #{datetime} (sms id #{sms.id})")
     end
   end
 end

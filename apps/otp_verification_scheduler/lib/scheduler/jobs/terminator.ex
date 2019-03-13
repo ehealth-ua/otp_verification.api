@@ -10,15 +10,7 @@ defmodule Scheduler.Jobs.Terminator do
   def run do
     validations_expired_timeout = config()[:validations_expired_timeout]
     {deleted_records_count, _} = delete_expired_verifications(validations_expired_timeout)
-
-    Logger.info(fn ->
-      Poison.encode!(%{
-        "log_type" => "scheduler",
-        "action" => "run",
-        "body" => "Just deleted #{deleted_records_count} expired verifications"
-      })
-    end)
-
+    Logger.info("Just deleted #{deleted_records_count} expired verifications")
     {:ok, deleted_records_count}
   end
 

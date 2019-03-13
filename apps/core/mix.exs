@@ -38,31 +38,18 @@ defmodule Core.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # To depend on another app inside the umbrella:
-  #
-  #   {:myapp, in_umbrella: true}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
       {:confex_config_provider, "~> 0.1.0"},
-      {:confex, "~> 3.3"},
-      {:poison, "~> 3.1"},
-      {:ecto, "~> 2.1"},
-      {:postgrex, ">= 0.0.0"},
+      {:confex, "~> 3.4"},
+      {:ecto, "~> 3.0"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, "~> 0.14.1"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:hackney, "~> 1.13", override: true},
       {:httpoison, "~> 1.1.0"},
-      {:jvalid, "~> 0.6.0"},
+      {:jvalid, "~> 0.7.0"},
       {:mouth, git: "https://github.com/Nebo15/mouth.git", branch: "master"},
       {:timex, "~> 3.5.0"},
       {:redix, "~> 0.7.1"},
@@ -72,7 +59,7 @@ defmodule Core.MixProject do
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:mox, "~> 0.4", only: [:test]},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.1"}
     ]
   end
 

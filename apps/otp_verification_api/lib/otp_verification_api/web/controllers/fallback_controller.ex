@@ -32,7 +32,7 @@ defmodule OtpVerification.Web.FallbackController do
     conn
     |> put_status(429)
     |> put_resp_content_type("application/json")
-    |> send_resp(429, Poison.encode!(%{message: "too many requests"}))
+    |> send_resp(429, Jason.encode!(%{message: "too many requests"}))
   end
 
   def call(conn, {:error, :service_unavailable}) do

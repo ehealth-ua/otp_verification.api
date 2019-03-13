@@ -25,7 +25,7 @@ defmodule Core.ReleaseTasks do
   end
 
   defp start_repo(repo) do
-    start_applications([:logger, :postgrex, :ecto, :redis])
+    start_applications([:logger, :postgrex, :ecto, :ecto_sql, :redis])
     Application.load(:otp_verification_api)
     # If you don't include Repo in application supervisor start it here manually
     repo.start_link()

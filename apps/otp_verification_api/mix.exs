@@ -34,27 +34,9 @@ defmodule OtpVerificationAPI.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # To depend on another app inside the umbrella:
-  #
-  #   {:myapp, in_umbrella: true}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:confex, "~> 3.3"},
-      {:poison, "~> 3.1"},
-      {:httpoison, "~> 1.1.0"},
-      {:hackney, "~> 1.13", override: true},
-      {:phoenix_ecto, "~> 3.2"},
-      {:ex_machina, "~> 2.2", only: [:dev, :test]},
+      {:phoenix_ecto, "~> 4.0"},
       {:core, in_umbrella: true}
     ]
   end
