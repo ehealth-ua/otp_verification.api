@@ -9,7 +9,7 @@ defmodule Core.Verification.Verification do
     field(:code, :integer)
     field(:phone_number, :string)
     field(:status, :string)
-    field(:code_expired_at, :utc_datetime)
+    field(:code_expired_at, :utc_datetime_usec)
     field(:active, :boolean, default: true)
     field(:attempts_count, :integer, default: 0)
 

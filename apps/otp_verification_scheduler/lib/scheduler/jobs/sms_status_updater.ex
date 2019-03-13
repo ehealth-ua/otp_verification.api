@@ -28,7 +28,7 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
 
   defp find_sms_for_status_check(minutes) do
     SMSLog
-    |> where([sms], sms.inserted_at > ^DateTime.to_naive(DateTime.add(DateTime.utc_now(), -minutes * 60, :second)))
+    |> where([sms], sms.inserted_at > ^DateTime.add(DateTime.utc_now(), -minutes * 60, :second))
     |> where([sms], sms.gateway_status in ^[SMSLog.status(:accepted), SMSLog.status(:enroute), SMSLog.status(:unknown)])
     |> Repo.all()
   end

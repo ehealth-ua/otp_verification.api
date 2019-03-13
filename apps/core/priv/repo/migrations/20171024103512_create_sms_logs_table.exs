@@ -8,7 +8,7 @@ defmodule Core.Repo.Migrations.CreateSmsLogsTable do
       add(:body, :string, null: false)
       add(:gateway_id, :string)
       add(:gateway_status, :string)
-      timestamps(updated_at: false, type: :utc_datetime)
+      timestamps(updated_at: false, type: :utc_datetime_usec)
     end
   end
 end
