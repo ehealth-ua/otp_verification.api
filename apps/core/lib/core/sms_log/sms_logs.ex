@@ -64,6 +64,6 @@ defmodule Core.SMSLogs do
   end
 
   @impl true
-  def deliver(message, provider_config, :mouth_twilio), do: Primary.deliver(message, provider_config)
-  def deliver(message, provider_config, :mouth_sms2ip), do: Secondary.deliver(message, provider_config)
+  def deliver(message, provider_config, :mouth_twilio), do: Primary.deliver(message)
+  def deliver(message, provider_config, :mouth_sms2ip), do: Secondary.deliver(message)
 end

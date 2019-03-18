@@ -71,17 +71,16 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
             do: put_change(update_query, :gateway_status, SMSLog.status(:terminated)),
             else: update_query
 
-        result =
-          if get_change(update_query, :gateway_status) do
+        if get_change(update_query, :gateway_status) do
+          result =
             update_query
             |> put_change(:status_changed_at, Timezone.convert(datetime, "UTC"))
             |> Repo.update()
-          else
-            nil
-          end
 
-        :ets.update_counter(:sms_counter, "count", 1)
-        result
+          :ets.update_counter(:sms_counter, "count", 1)
+
+          result
+        end
 
       {:error, _} ->
         Logger.error("Error parsing provider datetime: #{datetime} (sms id #{sms.id})")
