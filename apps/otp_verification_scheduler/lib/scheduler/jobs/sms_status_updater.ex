@@ -6,7 +6,8 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
   require Logger
   import Ecto.Changeset
   import Ecto.Query
-  alias Core.Messenger
+  alias Core.Messenger.Primary
+  alias Core.Messenger.Secondary
   alias Core.Repo
   alias Core.SMSLog.Schema, as: SMSLog
 
@@ -33,8 +34,18 @@ defmodule Scheduler.Jobs.SmsStatusUpdater do
     |> Repo.all()
   end
 
-  def update_sms_status(sms) do
-    case Messenger.status(sms.gateway_id) do
+  def update_sms_status(%SMSLog{provider: "mouth_twilio"} = sms) do
+    case Primary.status(sms.gateway_id) do
+      {_, [status: status, id: _id, datetime: datetime]} ->
+        do_update_sms_status(sms, status, datetime)
+
+      _ ->
+        nil
+    end
+  end
+
+  def update_sms_status(%SMSLog{provider: "mouth_sms2ip"} = sms) do
+    case Secondary.status(sms.gateway_id) do
       {_, [status: status, id: _id, datetime: datetime]} ->
         do_update_sms_status(sms, status, datetime)
 

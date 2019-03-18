@@ -5,10 +5,10 @@ defmodule Core.SMSLogs do
   require Logger
   import Ecto.Changeset
   import Mouth.Message
-  alias Core.Messenger
+  alias Core.Messenger.Primary
+  alias Core.Messenger.Secondary
   alias Core.Repo
   alias Core.SMSLog.Schema, as: SMSLog
-  alias Mouth.Messenger
 
   @behaviour Core.SMSLogsBehaviour
   @sms_sender_client Application.get_env(:core, :api_resolvers)[:sms_sender]
@@ -60,9 +60,10 @@ defmodule Core.SMSLogs do
     new_message()
     |> to(phone_number)
     |> body(body)
-    |> @sms_sender_client.deliver(provider_config)
+    |> @sms_sender_client.deliver(provider_config, provider)
   end
 
   @impl true
-  def deliver(message, provider_config), do: Messenger.deliver(message, provider_config)
+  def deliver(message, provider_config, :mouth_twilio), do: Primary.deliver(message, provider_config)
+  def deliver(message, provider_config, :mouth_sms2ip), do: Secondary.deliver(message, provider_config)
 end

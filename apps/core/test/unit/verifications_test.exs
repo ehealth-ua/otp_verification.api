@@ -116,7 +116,7 @@ defmodule Core.VerificationsTest do
 
   describe "Verifications CRUD" do
     setup do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -131,7 +131,7 @@ defmodule Core.VerificationsTest do
     end
 
     test "too many requests" do
-      stub(SMSLogsMock, :deliver, fn message, config ->
+      stub(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -152,7 +152,7 @@ defmodule Core.VerificationsTest do
     end
 
     test "complete verification" do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 

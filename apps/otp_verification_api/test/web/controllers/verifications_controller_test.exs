@@ -37,7 +37,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   describe "POST /verifications" do
     test "initialize verification", %{conn: conn} do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -54,7 +54,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     test "initialize verification too many requests", %{conn: conn} do
       System.put_env("INIT_VERIFICATION_LIMIT", "5")
 
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -73,7 +73,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     end
 
     test "creating new verification with same number deactivates older ones", %{conn: conn} do
-      expect(SMSLogsMock, :deliver, 2, fn message, config ->
+      expect(SMSLogsMock, :deliver, 2, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -113,7 +113,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   describe "PATCH /verifications" do
     setup do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -136,8 +136,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     test "failed verification", %{conn: conn} do
       verification = initialize_verification()
 
-      conn =
-        patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
+      conn = patch(conn, "/verifications/#{verification.phone_number}/actions/complete", %{code: 12345})
 
       assert %{"error" => %{"message" => "Invalid verification code"}} = json_response(conn, 403)
     end
@@ -184,7 +183,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
     test "get proper verification response when creates many verifications for same number", %{
       conn: conn
     } do
-      expect(SMSLogsMock, :deliver, 4, fn message, config ->
+      expect(SMSLogsMock, :deliver, 4, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -203,7 +202,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   describe "GET /verifications" do
     test "GET /verifications", %{conn: conn} do
-      expect(SMSLogsMock, :deliver, 2, fn message, config ->
+      expect(SMSLogsMock, :deliver, 2, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -242,7 +241,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
 
   describe "testing errors callback" do
     setup do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Messenger.deliver(message, config)
       end)
 
@@ -261,8 +260,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
       Application.put_env(:core, :code_length, 0)
       Application.put_env(:core, :code_text, "exception")
 
-      conn =
-        post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
+      conn = post(conn, verifications_path(Endpoint, :initialize), %{"phone_number" => "+380931232323"})
 
       assert json_response(conn, 422)
     end

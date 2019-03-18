@@ -7,7 +7,7 @@ defmodule Core.MultipleProvidersTest do
   alias Mouth.Messenger
 
   test "save_and_send_sms without defined probider" do
-    expect(SMSLogsMock, :deliver, fn message, config ->
+    expect(SMSLogsMock, :deliver, fn message, config, _provider ->
       Messenger.deliver(message, config)
     end)
 
@@ -16,7 +16,7 @@ defmodule Core.MultipleProvidersTest do
   end
 
   test "save_and_send_sms with defined probider mouth_twilio" do
-    expect(SMSLogsMock, :deliver, fn message, config ->
+    expect(SMSLogsMock, :deliver, fn message, config, _provider ->
       Messenger.deliver(message, config)
     end)
 
@@ -29,7 +29,7 @@ defmodule Core.MultipleProvidersTest do
   end
 
   test "save_and_send_sms with defined probider mouth_sms2ip" do
-    expect(SMSLogsMock, :deliver, fn _message, _config ->
+    expect(SMSLogsMock, :deliver, fn _message, _config, _provider ->
       {:ok, %Schema{provider: "mouth_sms2ip"}}
     end)
 

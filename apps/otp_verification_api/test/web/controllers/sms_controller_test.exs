@@ -6,7 +6,7 @@ defmodule OtpVerification.Web.SMSControllerTest do
 
   describe "POST /sms/send" do
     setup do
-      expect(SMSLogsMock, :deliver, fn message, config ->
+      expect(SMSLogsMock, :deliver, fn message, config, _provider ->
         Mouth.Messenger.deliver(message, config)
       end)
 
