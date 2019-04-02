@@ -3,7 +3,6 @@ defmodule Core.Verification.Verification do
   use Ecto.Schema
 
   @primary_key {:id, :binary_id, autogenerate: true}
-  @derive {Phoenix.Param, key: :id}
   schema "verifications" do
     field(:check_digit, :integer)
     field(:code, :integer)
