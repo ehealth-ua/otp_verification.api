@@ -41,7 +41,7 @@
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], [], "hexpm"},
   "mime": {:hex, :mime, "1.3.1", "30ce04ab3175b6ad0bdce0035cba77bba68b813d523d1aac73d9781b4d193cf8", [:mix], [], "hexpm"},
   "mimerl": {:hex, :mimerl, "1.2.0", "67e2d3f571088d5cfd3e550c383094b47159f3eee8ffa08e64106cdf5e981be3", [:rebar3], [], "hexpm"},
-  "mouth": {:git, "https://github.com/Nebo15/mouth.git", "e734df932d33be11d1b471802c47e62650b1fd75", [branch: "master"]},
+  "mouth": {:git, "https://github.com/Nebo15/mouth.git", "ef9feca04ea6535e51865d5770e7fc07d09d73b7", [branch: "master"]},
   "mox": {:hex, :mox, "0.5.0", "c519b48407017a85f03407a9a4c4ceb7cc6dec5fe886b2241869fb2f08476f9e", [:mix], [], "hexpm"},
   "nex_json_schema": {:hex, :nex_json_schema, "0.8.0", "b1552b4193150e4c79294eb9032b4bcf473e1dab23cb625f6ee219ab06c33297", [:mix], [], "hexpm"},
   "nimble_parsec": {:hex, :nimble_parsec, "0.5.0", "90e2eca3d0266e5c53f8fbe0079694740b9c91b6747f2b7e3c5d21966bba8300", [:mix], [], "hexpm"},

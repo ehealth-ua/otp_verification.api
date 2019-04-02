@@ -36,6 +36,8 @@ defmodule OtpVerificationAPI.MixProject do
 
   defp deps do
     [
+      {:eview, "~> 0.15.0"},
+      {:phoenix, "~> 1.4.0"},
       {:phoenix_ecto, "~> 4.0"},
       {:core, in_umbrella: true}
     ]

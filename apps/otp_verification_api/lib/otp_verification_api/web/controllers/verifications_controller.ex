@@ -37,7 +37,7 @@ defmodule OtpVerification.Web.VerificationsController do
          {:ok, %VerifiedPhone{}} <- Verifications.add_verified_phone(verification) do
       conn
       |> put_status(:ok)
-      |> put_resp_header("location", verifications_path(conn, :show, verification))
+      |> put_resp_header("location", verifications_path(conn, :show, verification.id))
       |> render("show.json", verification: verification)
     end
   end
