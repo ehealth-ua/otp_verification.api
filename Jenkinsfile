@@ -33,13 +33,10 @@ pipeline {
           sudo docker ps;
         '''
         sh '''
-          until psql -U postgres -h localhost -c "create database ehealth";
+          until psql -U postgres -h localhost -c "create database otp_verification_api_dev";
             do
               sleep 2
             done
-          psql -U postgres -h localhost -c "create database prm_dev";
-          psql -U postgres -h localhost -c "create database fraud_dev";
-          psql -U postgres -h localhost -c "create database event_manager_dev";
         '''
         sh '''
           mix local.hex --force;
