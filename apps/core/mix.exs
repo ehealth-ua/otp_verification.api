@@ -54,9 +54,9 @@ defmodule Core.MixProject do
       {:timex, "~> 3.5.0"},
       {:redix, "~> 0.7.1"},
       {:ehealth_logger, git: "https://github.com/edenlabllc/ehealth_logger.git"},
-      {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:mox, "~> 0.4", only: [:test]},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
+      {:kube_rpc, "~> 0.2.0"},
       {:jason, "~> 1.1"}
     ]
   end

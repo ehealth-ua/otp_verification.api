@@ -124,8 +124,7 @@ defmodule Core.VerificationsTest do
     end
 
     test "initialize verification" do
-      assert {:ok, %Verification{} = verification} =
-               Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
+      assert {:ok, %Verification{} = verification} = Verifications.initialize_verification("+380637654433")
 
       assert verification.attempts_count == 0
     end
@@ -136,16 +135,16 @@ defmodule Core.VerificationsTest do
       end)
 
       System.put_env("INIT_VERIFICATION_LIMIT", "5")
-      assert {:ok, %Verification{}} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
-      assert {:error, :too_many_requests} = Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
-      assert {:ok, %Verification{}} = Verifications.initialize_verification(%{"phone_number" => "+380637654434"})
+      assert {:ok, %Verification{}} = Verifications.initialize_verification("+380637654432")
+      assert {:error, :too_many_requests} = Verifications.initialize_verification("+380637654432")
+      assert {:ok, %Verification{}} = Verifications.initialize_verification("+380637654434")
       System.put_env("INIT_VERIFICATION_LIMIT", "0")
     end
 
     test "initializing verification with same phone number deactivates all records with same phone number" do
       verification = insert(:verification, @create_attrs)
       assert verification.active
-      {:ok, new_verification} = Verifications.initialize_verification(%{"phone_number" => "+380631112233"})
+      {:ok, new_verification} = Verifications.initialize_verification("+380631112233")
       assert new_verification.active
       verification = Verifications.get_verification(verification.id)
       refute verification.active
@@ -156,14 +155,12 @@ defmodule Core.VerificationsTest do
         Messenger.deliver(message, config)
       end)
 
-      {:ok, %Verification{} = verification} =
-        Verifications.initialize_verification(%{"phone_number" => "+380637654433"})
+      {:ok, %Verification{} = verification} = Verifications.initialize_verification("+380637654433")
 
       {:ok, verified_verification, :verified} = Verifications.verify(verification, verification.code)
       refute verified_verification.active
 
-      {:ok, %Verification{} = verification} =
-        Verifications.initialize_verification(%{"phone_number" => "+380637654432"})
+      {:ok, %Verification{} = verification} = Verifications.initialize_verification("+380637654432")
 
       {:ok, %Verification{}, :not_verified} = Verifications.verify(verification, 123)
     end

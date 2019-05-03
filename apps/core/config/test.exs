@@ -17,9 +17,6 @@ config :core, Core.Repo,
   hostname: "localhost",
   ownership_timeout: 120_000_000
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
-
 # Print only warnings and errors during test
 config :logger, level: :warn
 

@@ -25,7 +25,7 @@ defmodule OtpVerification.Web.VerificationsControllerTest do
   end
 
   def initialize_verification(phone_number \\ "+380631112233") do
-    {:ok, verification} = Verifications.initialize_verification(%{"phone_number" => phone_number})
+    {:ok, verification} = Verifications.initialize_verification(phone_number)
     verification
   end
 

@@ -13,9 +13,8 @@ defmodule Core.SMSLogs do
   @behaviour Core.SMSLogsBehaviour
   @sms_sender_client Application.get_env(:core, :api_resolvers)[:sms_sender]
 
-  def save_and_send_sms(%{"phone_number" => phone_number, "body" => body} = params) do
-    type = params["type"] || "undefined"
-    sms_provider = provider(params["provider"])
+  def save_and_send_sms(phone_number, body, type, provider \\ nil) do
+    sms_provider = get_provider(provider)
 
     with {_, [status: gateway_status, id: gateway_id, datetime: _]} <- send_sms(phone_number, body, sms_provider),
          %Ecto.Changeset{} = changeset <-
@@ -35,11 +34,11 @@ defmodule Core.SMSLogs do
     cast(schema, attrs, [:phone_number, :body, :gateway_id, :gateway_status, :type, :provider])
   end
 
-  defp provider("mouth_sms2ip"), do: :mouth_sms2ip
-  defp provider("mouth_twilio"), do: :mouth_twilio
-  defp provider(nil), do: config()[:default_adapter]
+  defp get_provider("mouth_sms2ip"), do: :mouth_sms2ip
+  defp get_provider("mouth_twilio"), do: :mouth_twilio
+  defp get_provider(nil), do: config()[:default_adapter]
 
-  defp provider(undefined) do
+  defp get_provider(undefined) do
     Logger.error("Provider #{undefined} is not defined in config, default provider will be used")
     config()[:default_adapter]
   end

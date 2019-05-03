@@ -10,6 +10,9 @@
     "properties": {
         "phone_number": {
             "$ref": "#/definitions/phone"
+        },
+        "provider": {
+            "type": "string"
         }
     },
     "required": [

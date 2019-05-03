@@ -17,7 +17,7 @@ defmodule Core.Factory do
     }
   end
 
-  def verified_phone do
+  def verified_phone_factory do
     %VerifiedPhone{
       phone_number: "+380960000000"
     }
