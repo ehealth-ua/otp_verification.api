@@ -8,7 +8,8 @@ defmodule OtpVerification.Web.SMSController do
   action_fallback(OtpVerification.Web.FallbackController)
 
   def send(conn, params) do
-    with {:ok, %SMSLog{} = sms} <- SMSLogs.save_and_send_sms(params) do
+    with {:ok, %SMSLog{} = sms} <-
+           SMSLogs.save_and_send_sms(params["phone_number"], params["body"], params["type"], params["provider"]) do
       render(conn, "show.json", sms: sms)
     end
   end

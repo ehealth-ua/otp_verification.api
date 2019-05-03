@@ -106,11 +106,20 @@ defmodule Core.Verification.Verifications do
     end
   end
 
-  @spec initialize_verification(attrs :: %{}) :: {:ok, Verification.t()} | {:error, Ecto.Changeset.t()}
-  def initialize_verification(attrs) do
-    with :ok <- validate_initialize_frequency(attrs, config()[:init_verification_limit]),
-         %{} = attrs <- initialize_attrs(attrs) do
-      deactivate_verifications(attrs["phone_number"])
+  def complete(phone_number, code) do
+    with %Verification{active: true} = verification <- get_verification_by(phone_number: phone_number),
+         {:ok, %Verification{} = verification, :verified} <- verify(verification, code),
+         {:ok, %VerifiedPhone{}} <- add_verified_phone(verification) do
+      {:ok, verification}
+    end
+  end
+
+  @spec initialize_verification(phone_number :: binary(), provider :: binary() | nil) ::
+          {:ok, Verification.t()} | {:error, Ecto.Changeset.t()}
+  def initialize_verification(phone_number, provider \\ nil) do
+    with :ok <- validate_initialize_frequency(phone_number, config()[:init_verification_limit]),
+         %{} = attrs <- initialize_attrs(phone_number, provider) do
+      deactivate_verifications(phone_number)
 
       %Verification{}
       |> verification_changeset(attrs)
@@ -118,8 +127,8 @@ defmodule Core.Verification.Verifications do
     end
   end
 
-  defp validate_initialize_frequency(attrs, limit) when is_integer(limit) and limit > 0 do
-    key = "initialize:#{attrs["phone_number"]}"
+  defp validate_initialize_frequency(phone_number, limit) when is_integer(limit) and limit > 0 do
+    key = "initialize:#{phone_number}"
 
     with {:ok, 1} <- Redix.setnx(key, true),
          {:ok, "OK"} <- Redix.setex(key, true, limit) do
@@ -131,42 +140,38 @@ defmodule Core.Verification.Verifications do
 
   defp validate_initialize_frequency(_, _), do: :ok
 
-  @spec initialize_attrs(%{}) :: %{}
-  defp initialize_attrs(attrs) do
+  @spec initialize_attrs(phone_number :: binary(), provider :: binary() | nil) :: %{}
+  defp initialize_attrs(phone_number, provider) do
     {otp_code, checksum} = generate_otp_code()
     code_expired_at = get_code_expiration_time()
 
     sms_text = :core |> Confex.fetch_env!(:code_text) |> Kernel.<>(to_string(otp_code))
 
     try do
-      {:ok, _} =
-        SMSLogs.save_and_send_sms(%{
-          "phone_number" => attrs["phone_number"],
-          "body" => sms_text,
-          "type" => "verification",
-          "provider" => attrs["provider"]
-        })
+      {:ok, _} = SMSLogs.save_and_send_sms(phone_number, sms_text, "verification", provider)
     rescue
       e in Mouth.ApiError ->
         Logger.error(to_string(e.message))
     end
 
-    Map.merge(attrs, %{
+    %{
+      "phone_number" => phone_number,
+      "provider" => provider,
       "check_digit" => checksum,
       "code" => otp_code,
       "status" => Verification.status(:new),
       "code_expired_at" => code_expired_at
-    })
+    }
   end
 
   @spec verify(verification :: %{code: Integer.t()}, code :: Integer.t()) :: tuple()
   def verify(%Verification{code: verification_code} = verification, code) do
     with :ok <- verify_expiration_time(verification),
-         is_verified <- verification_code == code do
-      case is_verified do
-        true -> verification_completed(verification)
-        false -> verification_does_not_completed(verification, :not_verified)
-      end
+         true <- verification_code == code do
+      verification_completed(verification)
+    else
+      false -> verification_does_not_completed(verification, :not_verified)
+      error -> error
     end
   end
 

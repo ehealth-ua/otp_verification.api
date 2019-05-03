@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.20.2">
+    <meta name="project" content=" v2.5.0">
+    <title>OtpVerification.Rpc —  v2.5.0</title>
+    <link rel="stylesheet" href="dist/html-d9f58a6320b5bfa6dd77.css" />
+    <script src="dist/sidebar_items-237e9319c8.js"></script>
+      <script src="docs_config.js"></script>
+    <script async src="dist/html-d9f58a6320b5bfa6dd77.js"></script>
+    
+  </head>
+  <body data-type="modules">
+    <script>try { if(localStorage.getItem('night-mode')) document.body.className += ' night-mode'; } catch (e) { }</script>
+    <div class="main">
+
+<button class="sidebar-button sidebar-toggle">
+  <span class="icon-menu" title="Collapse/expand sidebar"></span>
+</button>
+
+<section class="sidebar">
+  <form class="sidebar-search" action="search.html">
+    <button type="submit" class="search-button">
+      <span class="icon-search" aria-hidden="true"></span>
+    </button>
+    <button type="button" tabindex="-1" class="search-close-button">
+      <span class="icon-cross" title="Cancel search"></span>
+    </button>
+    <label class="search-label">
+      <input name="q" type="text" id="search-list" class="search-input" placeholder="Search..." aria-label="Search" autocomplete="off" />
+    </label>
+  </form>
+
+  <div class="autocomplete">
+    <div class="autocomplete-results">
+    </div>
+  </div>
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectDetails">
+      <a href="api-reference.html" class="sidebar-projectName">
+      </a>
+      <h2 class="sidebar-projectVersion">
+        v2.5.0
+      </h2>
+    </div>
+  </div>
+
+  <ul class="sidebar-listNav">
+    <li><a id="extras-list" href="#full-list">Pages</a></li>
+
+      <li><a id="modules-list" href="#full-list">Modules</a></li>
+
+
+  </ul>
+  <div class="gradient"></div>
+  <ul id="full-list" class="sidebar-fullList"></ul>
+</section>
+
+<section class="content">
+  <div class="content-outer">
+    <div id="content" class="content-inner">
+
+
+      <h1>
+        <small class="app-vsn"> v2.5.0</small>
+OtpVerification.Rpc              </h1>
+
+
+        <section id="moduledoc">
+<p>This module contains functions that are called from other pods via RPC.</p>
+        </section>
+
+        <section id="summary" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#summary">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+            Summary
+          </h1>
+  <div class="summary-types summary">
+    <h2>
+      <a href="#types">Types</a>
+    </h2>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#t:phone_response/0">phone_response()</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#t:sms/0">sms()</a>
+  </div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#t:verification/0">verification()</a>
+  </div>
+</div>
+  </div>
+  <div class="summary-functions summary">
+    <h2>
+      <a href="#functions">Functions</a>
+    </h2>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#complete/2">complete(phone_number, code)</a>
+  </div>
+    <div class="summary-synopsis"><p>Complete code by phone_number</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#initialize/2">initialize(phone_number, provider \\ nil)</a>
+  </div>
+    <div class="summary-synopsis"><p>Initialize sms by phone number and provider</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#send_sms/4">send_sms(phone_number, body, type, provider \\ nil)</a>
+  </div>
+    <div class="summary-synopsis"><p>Send sms to phone number with body, type and provider</p></div>
+</div>
+<div class="summary-row">
+  <div class="summary-signature">
+    <a href="#verification_phone/1">verification_phone(phone_number)</a>
+  </div>
+    <div class="summary-synopsis"><p>Get verification phone by phone number</p></div>
+</div>
+  </div>
+        </section>
+
+        <section id="types" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#types">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+Types          </h1>
+          <div class="types-list">
+<section class="detail" id="t:phone_response/0">
+    <div class="detail-header">
+    <a href="#t:phone_response/0" class="detail-link" title="Link to this type">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature">phone_response()</span>
+        
+      <div class="specs">
+          <pre>phone_response() :: %{phone_number: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>()}</pre>
+      </div>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="t:sms/0">
+    <div class="detail-header">
+    <a href="#t:sms/0" class="detail-link" title="Link to this type">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature">sms()</span>
+        
+      <div class="specs">
+          <pre>sms() :: %{body: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(), id: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(), phone_number: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(), type: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>()}</pre>
+      </div>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+<section class="detail" id="t:verification/0">
+    <div class="detail-header">
+    <a href="#t:verification/0" class="detail-link" title="Link to this type">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature">verification()</span>
+        
+      <div class="specs">
+          <pre>verification() :: %{
+  active: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>(),
+  code_expired_at: DateTime,
+  id: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(),
+  status: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>()
+}</pre>
+      </div>
+  </div>
+  <section class="docstring">
+  </section>
+</section>
+          </div>
+        </section>
+        <section id="functions" class="details-list">
+          <h1 class="section-heading">
+            <a class="hover-link" href="#functions">
+              <span class="icon-link" aria-hidden="true"></span>
+              <span class="sr-only">Link to this section</span>
+            </a>
+Functions          </h1>
+          <div class="functions-list">
+<section class="detail" id="complete/2">
+    <div class="detail-header">
+    <a href="#complete/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">complete(phone_number, code)</span>
+        
+      <div class="specs">
+          <pre>complete(phone_number :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(), code :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>()) ::
+  {:ok, <a href="#t:verification/0">verification</a>()} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">atom</a>()} | nil</pre>
+      </div>
+  </div>
+  <section class="docstring">
+<p>Complete code by phone_number</p>
+<h2 id="complete/2-examples" class="section-heading">
+  <a href="#complete/2-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">OtpVerification.Rpc</span><span class="o">.</span><span class="n">complete</span><span class="p" data-group-id="2199702247-1">(</span><span class="s">&quot;+380960000000&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">123456</span><span class="p" data-group-id="2199702247-1">)</span><span class="w">
+</span><span class="p" data-group-id="2199702247-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w">
+</span><span class="p" data-group-id="2199702247-3">%{</span><span class="w">
+  </span><span class="ss">active</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w">
+  </span><span class="ss">code_expired_at</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2199702247-4">#</span><span class="nc" data-group-id="2199702247-4">DateTime</span><span class="p" data-group-id="2199702247-4">&lt;</span><span class="mi">2019</span><span class="o">-</span><span class="mi">08</span><span class="o">-</span><span class="mi">07</span><span class="w"> </span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000000</span><span class="nc">Z</span><span class="p" data-group-id="2199702247-4">&gt;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;448c7356-1b69-4f4f-be70-d7e558b7cb09&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;verified&quot;</span><span class="w">
+</span><span class="p" data-group-id="2199702247-3">}</span><span class="p" data-group-id="2199702247-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="initialize/2">
+  
+    <span id="initialize/1"></span>
+  <div class="detail-header">
+    <a href="#initialize/2" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">initialize(phone_number, provider \\ nil)</span>
+        
+      <div class="specs">
+          <pre>initialize(phone_number :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(), provider :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>() | nil) ::
+  {:ok, <a href="#t:verification/0">verification</a>()} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">atom</a>()}</pre>
+      </div>
+  </div>
+  <section class="docstring">
+<p>Initialize sms by phone number and provider</p>
+<h2 id="initialize/2-examples" class="section-heading">
+  <a href="#initialize/2-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">OtpVerification.Rpc</span><span class="o">.</span><span class="n">initialize</span><span class="p" data-group-id="7853215960-1">(</span><span class="s">&quot;+380960000000&quot;</span><span class="p" data-group-id="7853215960-1">)</span><span class="w">
+</span><span class="p" data-group-id="7853215960-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w">
+</span><span class="p" data-group-id="7853215960-3">%{</span><span class="w">
+  </span><span class="ss">active</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w">
+  </span><span class="ss">code_expired_at</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7853215960-4">#</span><span class="nc" data-group-id="7853215960-4">DateTime</span><span class="p" data-group-id="7853215960-4">&lt;</span><span class="mi">2019</span><span class="o">-</span><span class="mi">05</span><span class="o">-</span><span class="mi">02</span><span class="w"> </span><span class="mi">21</span><span class="p">:</span><span class="mi">58</span><span class="p">:</span><span class="mf">51.902086</span><span class="nc">Z</span><span class="p" data-group-id="7853215960-4">&gt;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;53982ced-ed95-48a9-bab7-78247ec7259f&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;new&quot;</span><span class="w">
+</span><span class="p" data-group-id="7853215960-3">}</span><span class="p" data-group-id="7853215960-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="send_sms/4">
+  
+    <span id="send_sms/3"></span>
+  <div class="detail-header">
+    <a href="#send_sms/4" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">send_sms(phone_number, body, type, provider \\ nil)</span>
+        
+      <div class="specs">
+          <pre>send_sms(
+  phone_number :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(),
+  body :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(),
+  type :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>(),
+  provider :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>()
+) :: {:ok, <a href="#t:sms/0">sms</a>()} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()}</pre>
+      </div>
+  </div>
+  <section class="docstring">
+<p>Send sms to phone number with body, type and provider</p>
+<h2 id="send_sms/4-examples" class="section-heading">
+  <a href="#send_sms/4-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">OtpVerification.Rpc</span><span class="o">.</span><span class="n">send_sms</span><span class="p" data-group-id="9016898689-1">(</span><span class="s">&quot;+380960000000&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;undefined&quot;</span><span class="p" data-group-id="9016898689-1">)</span><span class="w">
+</span><span class="p" data-group-id="9016898689-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w">
+</span><span class="p" data-group-id="9016898689-3">%{</span><span class="w">
+  </span><span class="ss">body</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;08600dea-f366-44e4-ad44-7111368f2209&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">phone_number</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;+380960000000&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="ss">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;undefined&quot;</span><span class="w">
+</span><span class="p" data-group-id="9016898689-3">}</span><span class="p" data-group-id="9016898689-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="verification_phone/1">
+    <div class="detail-header">
+    <a href="#verification_phone/1" class="detail-link" title="Link to this function">
+      <span class="icon-link" aria-hidden="true"></span>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature">verification_phone(phone_number)</span>
+        
+      <div class="specs">
+          <pre>verification_phone(phone_number :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">binary</a>()) :: {:ok, <a href="#t:phone_response/0">phone_response</a>()} | nil</pre>
+      </div>
+  </div>
+  <section class="docstring">
+<p>Get verification phone by phone number</p>
+<h2 id="verification_phone/1-examples" class="section-heading">
+  <a href="#verification_phone/1-examples" class="hover-link"><span class="icon-link" aria-hidden="true"></span></a>
+  Examples
+</h2>
+
+<pre><code class="nohighlight makeup elixir"><span class="gp unselectable">iex&gt; </span><span class="nc">OtpVerification.Rpc</span><span class="o">.</span><span class="n">verification_phone</span><span class="p" data-group-id="2613008353-1">(</span><span class="s">&quot;+380960000000&quot;</span><span class="p" data-group-id="2613008353-1">)</span><span class="w">
+</span><span class="p" data-group-id="2613008353-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2613008353-3">%{</span><span class="ss">phone_number</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;+380960000000&quot;</span><span class="p" data-group-id="2613008353-3">}</span><span class="p" data-group-id="2613008353-2">}</span></code></pre>
+  </section>
+</section>
+          </div>
+        </section>
+          <footer class="footer">
+        <p>
+          <span class="line">
+            Built using
+            <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener">ExDoc</a> (v0.20.2),
+          </span>
+          <span class="line">
+            designed by
+            <a href="https://twitter.com/dignifiedquire" target="_blank" rel="noopener" title="@dignifiedquire">Friedel Ziegelmayer</a>.
+          </span>
+        </p>
+        <p>
+          <button class="line footer-button night-mode-toggle">
+            Toggle night mode
+          </button>
+          <button class="line footer-button display-shortcuts-help">
+            Display keyboard shortcuts
+          </button>
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+</div>
+  
+  </body>
+</html>
+
