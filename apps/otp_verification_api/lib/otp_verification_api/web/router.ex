@@ -13,14 +13,6 @@ defmodule OtpVerification.Web.Router do
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:put_secure_browser_headers)
-
-    # Uncomment to enable versioning of your API
-    # plug Multiverse, gates: [
-    #   "2016-07-31": OtpVerification.Web.InitialGate
-    # ]
-
-    # You can allow JSONP requests by uncommenting this line:
-    # plug :allow_jsonp
   end
 
   scope "/", OtpVerification.Web do

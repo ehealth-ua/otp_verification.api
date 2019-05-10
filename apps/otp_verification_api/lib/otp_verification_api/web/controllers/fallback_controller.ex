@@ -3,23 +3,10 @@ defmodule OtpVerification.Web.FallbackController do
   This controller should be used as `action_fallback` in rest of controllers to remove duplicated error handling.
   """
   use OtpVerification.Web, :controller
+
   alias Core.Verification.Verification
   alias EView.Views.Error
   alias EView.Views.ValidationError
-
-  def call(conn, {_, _, :not_verified}) do
-    conn
-    |> put_status(403)
-    |> put_view(Error)
-    |> render(:"403", %{message: "Invalid verification code"})
-  end
-
-  def call(conn, {_, _, :expired}) do
-    conn
-    |> put_status(403)
-    |> put_view(Error)
-    |> render(:"403", %{message: "Verification code expired"})
-  end
 
   def call(conn, {:error, :not_found}) do
     conn
@@ -49,11 +36,11 @@ defmodule OtpVerification.Web.FallbackController do
     |> render(:"404")
   end
 
-  def call(conn, %Verification{active: false} = _verification) do
+  def call(conn, {:error, {:forbidden, message}}) do
     conn
     |> put_status(403)
     |> put_view(Error)
-    |> render(:"403", %{message: "Maximum attempts exceed"})
+    |> render(:"403", %{message: message})
   end
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
