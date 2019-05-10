@@ -83,9 +83,6 @@ defmodule OtpVerification.Rpc do
   def complete(phone_number, code) do
     with {:ok, %Verification{} = verification} <- Verifications.complete(phone_number, code) do
       {:ok, VerificationsView.render("show.json", %{verification: verification})}
-    else
-      {:ok, _, reason} -> {:error, reason}
-      error -> error
     end
   end
 

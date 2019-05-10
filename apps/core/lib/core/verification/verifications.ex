@@ -111,6 +111,11 @@ defmodule Core.Verification.Verifications do
          {:ok, %Verification{} = verification, :verified} <- verify(verification, code),
          {:ok, %VerifiedPhone{}} <- add_verified_phone(verification) do
       {:ok, verification}
+    else
+      %Verification{active: false} -> {:error, {:forbidden, "Maximum attempts exceed"}}
+      {:ok, _, :not_verified} -> {:error, {:forbidden, "Invalid verification code"}}
+      {:ok, _, :expired} -> {:error, {:forbidden, "Verification code expired"}}
+      error -> error
     end
   end
 

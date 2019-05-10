@@ -64,12 +64,17 @@ defmodule OtpVerification.RpcTest do
 
     test "invalid code" do
       verification = insert(:verification)
-      assert {:error, :not_verified} = Rpc.complete(verification.phone_number, "invalid")
+      assert {:error, {:forbidden, "Invalid verification code"}} == Rpc.complete(verification.phone_number, "invalid")
     end
 
     test "code is expired" do
       verification = insert(:verification, code_expired_at: DateTime.utc_now())
-      assert {:error, :expired} = Rpc.complete(verification.phone_number, verification.code)
+      assert {:error, {:forbidden, "Verification code expired"}} == Rpc.complete(verification.phone_number, verification.code)
+    end
+
+    test "verification is not active" do
+      verification = insert(:verification, active: false)
+      assert {:error, {:forbidden, "Maximum attempts exceed"}} == Rpc.complete(verification.phone_number, verification.code)
     end
 
     test "success" do
