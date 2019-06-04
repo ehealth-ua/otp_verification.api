@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [2.5.1](https://github.com/edenlabllc/otp_verification.api/compare/2.5.0...2.5.1) (2019-6-4)
+
+
+
+
+### Bug Fixes:
+
+* return error instead of inactive verification on complete (#88)
+
 ## [2.5.0](https://github.com/edenlabllc/otp_verification.api/compare/2.5.0...2.5.0) (2019-5-9)
 
 
