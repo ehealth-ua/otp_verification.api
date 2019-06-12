@@ -56,7 +56,7 @@ defmodule Core.MixProject do
       {:ehealth_logger, git: "https://github.com/edenlabllc/ehealth_logger.git"},
       {:mox, "~> 0.4", only: [:test]},
       {:ex_machina, "~> 2.2", only: [:dev, :test]},
-      {:kube_rpc, "~> 0.2.0"},
+      {:kube_rpc, "~> 0.3.0"},
       {:jason, "~> 1.1"}
     ]
   end
